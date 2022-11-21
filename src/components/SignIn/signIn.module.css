@@ -1,0 +1,12 @@
+#tabsTrigger1[data-state='active']{
+    background-color: #AAAAAA;
+    border-right: 2px solid black;
+    color:white;
+  }
+
+#tabsTrigger2[data-state='active']{
+    background-color: #AAAAAA;
+    border-left: 2px solid black;
+    color:white;
+  }
+
