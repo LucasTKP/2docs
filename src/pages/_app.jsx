@@ -1,10 +1,10 @@
 import { Poiret_One, Poppins } from '@next/font/google'
 import {Amplify, Auth} from 'aws-amplify'
 import { useEffect } from 'react';
-import awsconfig from '../../aws-exports'
+import awsmobile from '../../aws-exports'
 import "../styles/globals.css";
 
-Amplify.configure({...awsconfig, ssr: true})
+Amplify.configure({...awsmobile, ssr: true})
 
 const poiretOne = Poiret_One({
   display: 'swap',
@@ -20,27 +20,27 @@ const poppins = Poppins({
 
 
 export default function MyApp({ Component, pageProps }) {
-  // useEffect(() => {
-  //   if(Component().type.name == 'Signin'){
-  //       Auth.currentSession()
-  //       .then((userSession) => {
-  //         window.location.href = "/home";
-  //         this.setState({ 
-  //             signedIn: true, 
-  //             isSigningIn: false,
-  //             tokenId: userSession.idToken.jwtToken,
-  //             refreshToken: userSession.refreshToken.token
-  //         });
-  //     })
-  //   } else if (Component().type.name == 'AlterPassword') {
+  useEffect(() => {
+    if(Component().type.name == 'Signin'){
+        Auth.currentSession()
+        .then((userSession) => {
+          window.location.href = "/home";
+          this.setState({ 
+              signedIn: true, 
+              isSigningIn: false,
+              tokenId: userSession.idToken.jwtToken,
+              refreshToken: userSession.refreshToken.token
+          });
+      })
+    } else if (Component().type.name == 'AlterPassword') {
       
-  //   } else {
-  //     Auth.currentSession()
-  //     .catch(() => {
-  //       window.location.href = "/";
-  //     });
-  //   }
-  //   },[Component])
+    } else {
+      Auth.currentSession()
+      .catch(() => {
+        window.location.href = "/";
+      });
+    }
+    },[Component])
 
 
   return (
