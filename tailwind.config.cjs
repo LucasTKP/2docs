@@ -20,13 +20,17 @@ module.exports = {
         ...defaultTheme.screens,
       },
 
+      colors:{
+        primary:"#DDDDDD",
+        secondary: "#AAAAAA",
+        terciary: "#9E9E9E",
+        strong: "#686868",
+        red: "#BD0303",
+        green: "#087E14"
+      }
+
     },
-    colors:{
-      primary:"#DDDDDD",
-      secondary: "#AAAAAA",
-      terciary: "#9E9E9E",
-      strong: "#686868"
-    }
+
   },
   plugins: [],
 };

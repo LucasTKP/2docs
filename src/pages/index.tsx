@@ -1,13 +1,12 @@
 import { type NextPage } from "next";
-import {Signin} from "../components/SignIn"
+import Signin from "../components/SignIn";
 
-const Login: NextPage = () => {
+
+const SignIn: NextPage = () => {
 
   return (
-      <Signin />
+    <Signin  />
     );
 };
 
-
-
-export default Login;
+export default SignIn
