@@ -40,6 +40,9 @@ export default function MyApp({ Component, pageProps }) {
       
     } else {
       Auth.currentSession()
+      .then((userSession) => {
+        window.location.href = "/home";
+      })
       .catch(() => {
         window.location.href = "/";
       });
