@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import awsconfig from '../../aws-exports'
 import "../../styles/globals.css";
 
+
 Amplify.configure({...awsconfig, ssr: true})
 
 const poiretOne = Poiret_One({
@@ -20,7 +21,28 @@ const poppins = Poppins({
 
 
 export default function MyApp({ Component, pageProps }) {
-
+  useEffect(() => {
+    const page = window.location.pathname
+    if(page == '/'){
+        Auth.currentSession()
+        .then((userSession) => {
+          window.location.href = "/home";
+          this.setState({ 
+              signedIn: true, 
+              isSigningIn: false,
+              tokenId: userSession.idToken.jwtToken,
+              refreshToken: userSession.refreshToken.token
+          });
+      })
+    } else if (page == '/recoveryPassword') {
+      
+    } else {
+      Auth.currentSession()
+      .catch(() => {
+        window.location.href = "/";
+      });
+    }
+    },[Component])
 
 
   return (
