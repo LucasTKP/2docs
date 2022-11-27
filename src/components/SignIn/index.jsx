@@ -3,39 +3,51 @@ import * as Tabs from '@radix-ui/react-tabs';
 import styles from "./signIn.module.css"
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { CheckIcon, EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { Component  } from 'react';
+import { useState, useContext} from 'react';
 import InputMask from "react-input-mask";
 import Link from 'next/link'
 import { Auth, Cache} from 'aws-amplify';
 import Modals from '../Modals'
+import AppContext from '../AppContext';
+import { useRouter } from 'next/dist/client/router'
 
 
 
-class Signin extends Component {
-  state = {
-      signedIn: false,
-      confirmed: false,
-      username: '',
-      password: '',
-      email: '',
-      phoneNumber: '',
-      confirmationCode: '',
-      submittingSignUp: false,
-      submittingConfirmation: false,
-      eye: false,
-      modalError: false,
-      messageError: "",
-      checked: false
-  }
 
-constructor(props) {
-      super(props);
-      this.handleChange = this.handleChange.bind(this);
-      this.handleSubmit= this.handleSubmit.bind(this);
-      this.resetPassword= this.resetPassword.bind(this);
-}
+function Signin(){
+  const context = useContext(AppContext)
+  const [signedIn, setSignedIn] = useState("")
+  const [tokenId, setTokenId] = useState("")
+  const [refreshToken, setRefreshToken] = useState("")
+  const [isSigningIn, setIsSigningIn] = useState(false)
+  const [confirmed, setConfirmed] = useState("")
+  const [dataUser, setDataUser] = useState({email: "", password: "", checked: false})
+  const [eye, setEye] = useState(false)
+  const [modal, setModal] = useState({message: "", type: "error"})
+  const router = useRouter()
+  // state = {
+  //     signedIn: false,
+  //     confirmed: false,
+  //     username: '',
+  //     password: '',
+  //     email: '',
+  //     confirmationCode: '',
+  //     submittingSignUp: false,
+  //     submittingConfirmation: false,
+  //     eye: false,
+  //     modalError: false,
+  //     messageError: "",
+  //     checked: false
+  // }
 
-changeAuthStorageConfiguration() {
+// constructor(props) {
+//       super(props);
+//       this.handleChange = this.handleChange.bind(this);
+//       this.handleSubmit= this.handleSubmit.bind(this);
+//       this.resetPassword= this.resetPassword.bind(this);
+// }
+
+function changeAuthStorageConfiguration() {
     const shouldRememberUser = this.state.checked
     if (shouldRememberUser) {
         const localStorageCache = Cache.createInstance({
@@ -57,74 +69,88 @@ changeAuthStorageConfiguration() {
         });
     }
 }
-
-  handleChange(e) {
-      this.setState({
-          [e.target.name]: e.target.value
-      });
-  }
   
-handleSubmit(e) {
+function handleSubmit(e) {
+  const username = dataUser.email
+  const password = dataUser.password
   e.preventDefault();
-  this.setState({modalError: false})
-  const { signedIn, username, password } = this.state;
   if (!signedIn) {
-      this.setState({ isSigningIn: true });
+      setIsSigningIn(false)
+      console.log(password)
       Auth.signIn({
-          username,
-          password
+        username,
+        password
       }).then((cognitoUser) => {
           Auth.currentSession()
           .then((userSession) => {
               window.location.href = "/home";
-              this.setState({ 
-                  signedIn: true, 
-                  isSigningIn: false,
-                  tokenId: userSession.idToken.jwtToken,
-                  refreshToken: userSession.refreshToken.token
-              });
+              setSignedIn(true)
+              setIsSigningIn(false)
+              setTokenId(userSession.idToken.jwtToken)
+              setRefreshToken(userSession.refreshToken.token)
+              // this.setState({ 
+              //     signedIn: true, 
+              //     isSigningIn: false,
+              //     tokenId: userSession.idToken.jwtToken,
+              //     refreshToken: userSession.refreshToken.token
+              // });
           })
           .catch((err) => {
-              this.setState({ isSigningIn: false });
-              console.log(err)
+            setIsSigningIn(false)
+            console.log(err.message)
               
           });
 
       }).catch((err) => {
-          this.setState({ isSigningIn: false });
-          this.setState({modalError: true})
-          this.setState({messageError: "Credenciais do usuario incorretas, verifique-as e tente novamente."})
+          console.log(err)
+          setIsSigningIn(false)
+          context.setModalGlobal(true)
+          setModal({...modal,message: err.message, type: "error"})
+          // this.setState({modalError: true})
+          // this.setState({messageError: "Credenciais do usuario incorretas, verifique-as e tente novamente."})
       });
   }
 }
 
 
-componentDidMount() {
-  this.setState({ isSigningIn: true });
-  Auth.currentSession()
-      .then((userSession) => {
-          window.location.href = "/home";
-          this.setState({ 
-              signedIn: true, 
-              isSigningIn: false,
-              tokenId: userSession.idToken.jwtToken,
-              refreshToken: userSession.refreshToken.token
-          });
-      })
-      .catch((err) => {
-          this.setState({ isSigningIn: false });
-      });
+// componentDidMount() {
+//   this.setState({ isSigningIn: true });
+//   Auth.currentSession()
+//       .then((userSession) => {
+//           window.location.href = "/home";
+//           this.setState({ 
+//               signedIn: true, 
+//               isSigningIn: false,
+//               tokenId: userSession.idToken.jwtToken,
+//               refreshToken: userSession.refreshToken.token
+//           });
+//       })
+//       .catch((err) => {
+//           this.setState({ isSigningIn: false });
+//       });
+// }
+
+function resetPassword() {
+  console.log(dataUser.email)
+  var result = '';
+  for (var i = 80; i > 0; --i) result += (Math.floor(Math.random()*256)).toString(16);     
+  Auth.forgotPassword(dataUser.email)
+  .then(data =>   {
+    router.push({
+      pathname: "/recoveryPassword",
+      query: { token: result, email: dataUser.email },
+    }); 
+    localStorage.setItem("token", result)
+  })
+  .catch(err => {
+    console.log(err)
+    setModal({...modal, message: err.message, modalError: true})
+    context.setModalGlobal(true)
+  });
+
 }
 
-resetPassword() {
-  const {username} = this.state
-  Auth.forgotPassword(username)
-  .then(data =>   window.location.href = `/recoveryPassword?email=${username}`)
-  .catch(err => this.setState({messageError: "Este email foi desativado ou não está cadastrado em nosso sistema.", modalError: true}));
-}
 
-
-  render () {
     return (
       <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">
         <Tabs.Root  className="w-[400px] max-lsm:w-[330px]" defaultValue="tab1">
@@ -139,27 +165,27 @@ resetPassword() {
             </Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content className="mt-[20px]" value="tab1">
-            <form onSubmit={this.handleSubmit} className="outline-none">
+            <form onSubmit={handleSubmit} className="outline-none">
               <fieldset className="flex flex-col">
                 <label className="text-[18px]" htmlFor="Email">
                   Email
                 </label>
-                <input required type="email" value={this.state.username} name="username" onChange={this.handleChange} className="pl-[5px] text-[18px] bg-[#0000] border-[1px] border-black rounded-[8px] outline-none py-[10px]" placeholder='Digite seu email' />
+                <input required type="email" value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="pl-[5px] text-[18px] bg-[#0000] border-[1px] border-black rounded-[8px] outline-none py-[10px]" placeholder='Digite seu email' />
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
                 <label className="text-[18px]" htmlFor="username">
                   Senha
                 </label>
                 <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center'>
-                  <input required minLength={8} type={this.state.eye ? "text" : "password"} name="password" onChange={this.handleChange} className="w-full text-[18px] bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
-                  {this.state.eye ? <EyeOpenIcon onClick={() => this.setState({eye : false})}  width={20} height={20} className="w-[40px] cursor-pointer"/> :
-                  <EyeClosedIcon onClick={() => this.setState({eye : true})}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
+                  <input required minLength={8} type={eye ? "text" : "password"} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className="w-full text-[18px] bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
+                  {eye ? <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer"/> :
+                  <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
                 </div>
               </fieldset>
 
               <div className='flex items-center mt-[10px] justify-between'>
                 <div>
-                  <Checkbox.Root  onClick={() => this.setState({checked: !this.state.checked})} className="w-[20px] h-[20px] bg-[#fff] border-2 border-[#666666] rounded-[4px]" defaultChecked={false} id="c1">
+                  <Checkbox.Root  onClick={() => setDataUser({...dataUser, checked:!dataUser.checked})} className="w-[20px] h-[20px] bg-[#fff] border-2 border-[#666666] rounded-[4px]" defaultChecked={false} id="c1">
                     <Checkbox.Indicator id={styles.checkbox} className="bg-[#000]">
                       <CheckIcon />
                     </Checkbox.Indicator>
@@ -168,7 +194,7 @@ resetPassword() {
                     Lembrar de mim
                   </label>
                 </div>
-                <button type="button" onClick={this.resetPassword} className='underline text-[18px] text-[#005694] cursor-pointer'>Esqueci a senha</button>
+                <button type="button" onClick={resetPassword} className='underline text-[18px] text-[#005694] cursor-pointer'>Esqueci a senha</button>
               </div>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
@@ -188,9 +214,9 @@ resetPassword() {
                   Senha
                 </label>
                 <div className='flex pl-[5px] border-[1px] border-black rounded-[8px] items-center'>
-                  <input required minLength={8} type={this.state.eye ? "text" : "password"} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className="w-full text-[18px] bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
-                  {this.state.eye ? <EyeOpenIcon onClick={() => this.setState.eye(false)}  width={20} height={20} className="w-[40px] cursor-pointer"/> :
-                  <EyeClosedIcon onClick={() => this.setState.eye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
+                  <input required minLength={8} type={eye ? "text" : "password"} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className="w-full text-[18px] bg-[#0000] outline-none py-[10px]" placeholder='Digite sua senha' />
+                  {eye ? <EyeOpenIcon onClick={() => setEye(false)}  width={20} height={20} className="w-[40px] cursor-pointer"/> :
+                  <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
                 </div>
               </fieldset>
 
@@ -213,10 +239,9 @@ resetPassword() {
             </form>
           </Tabs.Content>
         </Tabs.Root>
-        <Modals message={this.state.messageError} modal={this.state.modalError} type={"error"}/>
+        <Modals message={modal.message} type={modal.type}/>
       </section>
   )
   }
-}
 
 export default Signin;
