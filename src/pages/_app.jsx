@@ -20,27 +20,7 @@ const poppins = Poppins({
 
 
 export default function MyApp({ Component, pageProps }) {
-  useEffect(() => {
-    if(Component().type.name == 'Signin'){
-        Auth.currentSession()
-        .then((userSession) => {
-          window.location.href = "/home";
-          this.setState({ 
-              signedIn: true, 
-              isSigningIn: false,
-              tokenId: userSession.idToken.jwtToken,
-              refreshToken: userSession.refreshToken.token
-          });
-      })
-    } else if (Component().type.name == 'AlterPassword') {
-      
-    } else {
-      Auth.currentSession()
-      .catch(() => {
-        window.location.href = "/";
-      });
-    }
-    },[Component])
+
 
 
   return (
