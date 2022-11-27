@@ -1,32 +1,49 @@
 import {EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useRouter } from 'next/dist/client/router'
 import { Auth} from 'aws-amplify';
 import Modals from '../Modals'
+import AppContext from '../AppContext';
 
 
 export function AlterPassword(){
+  const context = useContext(AppContext)
   const router = useRouter()
-  const [modal, setModal] = useState({message: "", modal: false, type:""})
-  const username = router.query.email
+  const [modal, setModal] = useState({message: "", type:""})
   const [dataUser, setDataUser] = useState({code:"000000", password:""})
   const [eye, setEye] = useState(false)
+
   function TradePassword(e){
     e.preventDefault()
     setModal({modal:false})
-    console.log(dataUser.code)
-    if(username.length > 10){
-      Auth.forgotPasswordSubmit(username, dataUser.code, dataUser.password)
+      Auth.forgotPasswordSubmit(router.query.email, dataUser.code, dataUser.password)
       .then(data => {
-        setModal({message: "Senha alterada com sucesso!", modal: true, type: "sucess"})
+        console.log(data)
+        context.setModalGlobal(true)
+        setModal({message: "Senha alterada com sucesso!", type: "sucess"})
         setTimeout(() => {
-          setModal({modal:false})
-          window.location.href = "/"
+          // router.push({
+          //   pathname: "/",
+          // }); 
         }, 2000)
       })
-      .catch(err => setModal({message: "O codigo digitado está errado, tente novamente.", modal: true, type: "error"}));
-    }
+      .catch(err => {
+        context.setModalGlobal(true)
+        setModal({message: err.message, type: "error"})
+      });
   }
+
+  useEffect(() => {
+    if(localStorage.token === undefined){
+      router.push({
+        pathname: "/",
+      })
+    } else if (localStorage.token != router.query.token){
+      router.push({
+        pathname: "/",
+      })
+    }
+  },[])
 return (
         <section className="bg-primary text-black w-screen h-screen flex flex-col justify-center items-center">
           <div className="w-[400px] max-lsm:w-[330px]">
@@ -58,7 +75,7 @@ return (
                 </button>
             </form>
           </div>
-          <Modals  message={modal.message} modal={modal.modal} type={modal.type}/>
+          <Modals  message={modal.message} type={modal.type}/>
         </section>
     )
 }
