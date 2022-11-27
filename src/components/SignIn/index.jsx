@@ -10,7 +10,6 @@ import { Auth, Cache} from 'aws-amplify';
 import Modals from '../Modals'
 import AppContext from '../AppContext';
 import { useRouter } from 'next/dist/client/router'
-import { json } from 'react-router-dom';
 
 
 
