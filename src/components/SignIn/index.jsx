@@ -25,27 +25,6 @@ function Signin(){
   const [eye, setEye] = useState(false)
   const [modal, setModal] = useState({message: "", type: "error"})
   const router = useRouter()
-  // state = {
-  //     signedIn: false,
-  //     confirmed: false,
-  //     username: '',
-  //     password: '',
-  //     email: '',
-  //     confirmationCode: '',
-  //     submittingSignUp: false,
-  //     submittingConfirmation: false,
-  //     eye: false,
-  //     modalError: false,
-  //     messageError: "",
-  //     checked: false
-  // }
-
-// constructor(props) {
-//       super(props);
-//       this.handleChange = this.handleChange.bind(this);
-//       this.handleSubmit= this.handleSubmit.bind(this);
-//       this.resetPassword= this.resetPassword.bind(this);
-// }
 
 function changeAuthStorageConfiguration() {
     const shouldRememberUser = this.state.checked
