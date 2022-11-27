@@ -22,9 +22,9 @@ export function AlterPassword(){
         context.setModalGlobal(true)
         setModal({message: "Senha alterada com sucesso!", type: "sucess"})
         setTimeout(() => {
-          // router.push({
-          //   pathname: "/",
-          // }); 
+          router.push({
+            pathname: "/",
+          }); 
         }, 2000)
       })
       .catch(err => {
