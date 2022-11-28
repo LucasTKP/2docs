@@ -26,33 +26,37 @@ function Signin(){
   const [modal, setModal] = useState({message: "", type: "error"})
   const router = useRouter()
 
-function changeAuthStorageConfiguration() {
-    const shouldRememberUser = this.state.checked
-    if (shouldRememberUser) {
-        const localStorageCache = Cache.createInstance({
-            keyPrefix: "localStorageAuthCache",
-            storage: window.localStorage
-        });
+function selectStoreCache(){
+  localStorage.setItem("sessionStorage", false)
+  if (dataUser.checked) {
+    const localStorageCache = Cache.createInstance({
+        keyPrefix: "auth",
+        storage: window.localStorage
+    });
 
-        Auth.configure({
-            storage: localStorageCache
-        });
-    } else {
-        const sessionStorageCache = Cache.createInstance({
-            keyPrefix: "sessionAuthCache",
-            storage: window.sessionStorage
-        });
+    Auth.configure({
+        storage: localStorageCache
+    });
+} else {
+    localStorage.setItem("sessionStorage", true)
+    const sessionStorageCache = Cache.createInstance({
+        keyPrefix: "auth",
+        storage: window.sessionStorage
+    });
 
-        Auth.configure({
-            storage: sessionStorageCache
-        });
-    }
+    Auth.configure({
+        storage: sessionStorageCache
+    });
 }
+}
+
   
 function handleSubmit(e) {
+  selectStoreCache()
   const username = dataUser.email
   const password = dataUser.password
   e.preventDefault();
+
   if (!signedIn) {
       setIsSigningIn(false)
       console.log(password)
@@ -67,12 +71,6 @@ function handleSubmit(e) {
               setIsSigningIn(false)
               setTokenId(userSession.idToken.jwtToken)
               setRefreshToken(userSession.refreshToken.token)
-              // this.setState({ 
-              //     signedIn: true, 
-              //     isSigningIn: false,
-              //     tokenId: userSession.idToken.jwtToken,
-              //     refreshToken: userSession.refreshToken.token
-              // });
           })
           .catch((err) => {
             setIsSigningIn(false)
@@ -85,29 +83,9 @@ function handleSubmit(e) {
           setIsSigningIn(false)
           context.setModalGlobal(true)
           setModal({...modal,message: err.message, type: "error"})
-          // this.setState({modalError: true})
-          // this.setState({messageError: "Credenciais do usuario incorretas, verifique-as e tente novamente."})
       });
   }
 }
-
-
-// componentDidMount() {
-//   this.setState({ isSigningIn: true });
-//   Auth.currentSession()
-//       .then((userSession) => {
-//           window.location.href = "/home";
-//           this.setState({ 
-//               signedIn: true, 
-//               isSigningIn: false,
-//               tokenId: userSession.idToken.jwtToken,
-//               refreshToken: userSession.refreshToken.token
-//           });
-//       })
-//       .catch((err) => {
-//           this.setState({ isSigningIn: false });
-//       });
-// }
 
 function resetPassword() {
   console.log(dataUser.email)
@@ -132,7 +110,7 @@ function resetPassword() {
 
     return (
       <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">
-        <Tabs.Root  className="w-[400px] max-lsm:w-[330px]" defaultValue="tab1">
+        <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
           <p className="text-[40px] font-poiretOne">Login</p>
           <p className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
           <Tabs.List className="w-full mt-[20px] border-b-2 border-black flex justify-between" aria-label="Manage your account">
@@ -169,11 +147,11 @@ function resetPassword() {
                       <CheckIcon />
                     </Checkbox.Indicator>
                   </Checkbox.Root>
-                  <label className="ml-[5px] text-[18px]" htmlFor="c1">
+                  <label className="ml-[5px] text-[18px] max-lsm:text-[16px]"  htmlFor="c1">
                     Lembrar de mim
                   </label>
                 </div>
-                <button type="button" onClick={resetPassword} className='underline text-[18px] text-[#005694] cursor-pointer'>Esqueci a senha</button>
+                <button type="button" onClick={resetPassword} className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
               </div>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
@@ -206,11 +184,11 @@ function resetPassword() {
                       <CheckIcon />
                     </Checkbox.Indicator>
                   </Checkbox.Root>
-                  <label className="ml-[5px] text-[18px]" htmlFor="c1">
+                  <label className="ml-[5px] text-[18px] max-lsm:text-[16px]" htmlFor="c1">
                     Lembrar de mim
                   </label>
                 </div>
-                  <Link href="/recoveryPassword" className='underline text-[18px] text-[#005694] cursor-pointer'>Esqueci a senha</Link>
+                  <Link href="/recoveryPassword" className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</Link>
               </div>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
