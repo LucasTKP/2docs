@@ -5,6 +5,7 @@ import awsconfig from '../../aws-exports'
 import "../../styles/globals.css";
 import AppContext from '../components/AppContext'
 
+
 Amplify.configure({...awsconfig, ssr: true})
 
 const poiretOne = Poiret_One({
