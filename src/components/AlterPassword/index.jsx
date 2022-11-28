@@ -46,7 +46,7 @@ export function AlterPassword(){
   },[])
 return (
         <section className="bg-primary text-black w-screen h-screen flex flex-col justify-center items-center">
-          <div className="w-[400px] max-lsm:w-[330px]">
+          <div className="w-[400px] max-lsm:w-[320px]">
             <p className="text-[40px] font-poiretOne">Recuperar Senha.</p>
             <p className="text-[25px]  font-poiretOne">Altere sua senha e faça login novamente.</p>
             <p className="text-[16px] mt-[20px]">Enviamos um codigo para o seu email, anote ele para trocar a senha</p>
