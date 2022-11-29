@@ -4,6 +4,8 @@ import { useRouter } from 'next/dist/client/router'
 import { Auth} from 'aws-amplify';
 import Modals from '../Modals'
 import AppContext from '../AppContext';
+import ErrorCognito from '../ErrorCognito';
+
 
 
 export function AlterPassword(){
@@ -15,21 +17,15 @@ export function AlterPassword(){
 
   function TradePassword(e){
     e.preventDefault()
-    setModal({modal:false})
       Auth.forgotPasswordSubmit(router.query.email, dataUser.code, dataUser.password)
       .then(data => {
-        console.log(data)
         context.setModalGlobal(true)
         setModal({message: "Senha alterada com sucesso!", type: "sucess"})
-        setTimeout(() => {
-          router.push({
-            pathname: "/",
-          }); 
-        }, 2000)
+        setTimeout(() => {router.push({pathname: "/",});}, 2000)
       })
       .catch(err => {
         context.setModalGlobal(true)
-        setModal({message: err.message, type: "error"})
+        setModal({...modal, message:ErrorCognito(err), type: 'error'});
       });
   }
 

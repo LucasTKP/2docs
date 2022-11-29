@@ -10,17 +10,13 @@ import { Auth, Cache} from 'aws-amplify';
 import Modals from '../Modals'
 import AppContext from '../AppContext';
 import { useRouter } from 'next/dist/client/router'
+import ErrorCognito from '../ErrorCognito';
 
 
 
 
 function Signin(){
   const context = useContext(AppContext)
-  const [signedIn, setSignedIn] = useState("")
-  const [tokenId, setTokenId] = useState("")
-  const [refreshToken, setRefreshToken] = useState("")
-  const [isSigningIn, setIsSigningIn] = useState(false)
-  const [confirmed, setConfirmed] = useState("")
   const [dataUser, setDataUser] = useState({email: "", password: "", checked: false})
   const [eye, setEye] = useState(false)
   const [modal, setModal] = useState({message: "", type: "error"})
@@ -49,65 +45,43 @@ function selectStoreCache(){
     });
 }
 }
-
   
-function handleSubmit(e) {
-  selectStoreCache()
-  const username = dataUser.email
-  const password = dataUser.password
-  e.preventDefault();
+  function handleSubmit(e) {
+    e.preventDefault();
+    selectStoreCache()
+    const username = dataUser.email
+    const password = dataUser.password
 
-  if (!signedIn) {
-      setIsSigningIn(false)
-      console.log(password)
-      Auth.signIn({
-        username,
-        password
-      }).then((cognitoUser) => {
-          Auth.currentSession()
-          .then((userSession) => {
-              window.location.href = "/home";
-              setSignedIn(true)
-              setIsSigningIn(false)
-              setTokenId(userSession.idToken.jwtToken)
-              setRefreshToken(userSession.refreshToken.token)
-          })
-          .catch((err) => {
-            setIsSigningIn(false)
-            console.log(err.message)
-              
-          });
-
-      }).catch((err) => {
-          console.log(err)
-          setIsSigningIn(false)
+    Auth.signIn({username, password})
+    .then((cognitoUser) => {
+        Auth.currentSession()
+        .then((userSession) => window.location.href = "/home")
+        .catch((err) =>{
           context.setModalGlobal(true)
-          setModal({...modal,message: err.message, type: "error"})
-      });
+          setModal({...modal, message:ErrorCognito(err), type: 'error'});
+        });
+    }).catch((err) => {
+      context.setModalGlobal(true)
+      setModal({...modal, message:ErrorCognito(err), type: 'error'});
+    });
   }
-}
 
-function resetPassword() {
-  console.log(dataUser.email)
-  var result = '';
-  for (var i = 80; i > 0; --i) result += (Math.floor(Math.random()*256)).toString(16);     
-  Auth.forgotPassword(dataUser.email)
-  .then(data =>   {
-    router.push({
-      pathname: "/recoveryPassword",
-      query: { token: result, email: dataUser.email },
-    }); 
-    localStorage.setItem("token", result)
-  })
-  .catch(err => {
-    console.log(err)
-    setModal({...modal, message: err.message, modalError: true})
-    context.setModalGlobal(true)
-  });
-
-}
-
-
+  function resetPassword() {
+    var result = '';
+    for (var i = 80; i > 0; --i) result += (Math.floor(Math.random()*256)).toString(16);     
+    Auth.forgotPassword(dataUser.email)
+    .then(data =>   {
+      router.push({
+        pathname: "/recoveryPassword",
+        query: { token: result, email: dataUser.email },
+      }); 
+      localStorage.setItem("token", result)
+    })
+    .catch(err => {
+      context.setModalGlobal(true)
+      setModal({...modal, message:ErrorCognito(err), type: 'error'});
+    });
+  }
     return (
       <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
