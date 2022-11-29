@@ -39,6 +39,7 @@ export function AlterPassword(){
         pathname: "/",
       })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 return (
         <section className="bg-primary text-black w-screen h-screen flex flex-col justify-center items-center">
@@ -71,7 +72,7 @@ return (
                 </button>
             </form>
           </div>
-          <Modals  message={modal.message} type={modal.type}/>
+          <Modals  message={modal.message} type={modal.type} size="little"/>
         </section>
     )
 }
