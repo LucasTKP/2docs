@@ -23,6 +23,7 @@ const poppins = Poppins({
 
 export default function MyApp({ Component, pageProps }) {
   const [modalGlobal, setModalGlobal] = useState(false)
+  const [actionCancel, setActionCancel] = useState(false)
 
   useEffect(() => {
       const sessionStorageCache = Cache.createInstance({
@@ -38,7 +39,7 @@ export default function MyApp({ Component, pageProps }) {
     if(page == '/'){
         Auth.currentSession()
         .then((userSession) => {
-          window.location.href = "/home";
+          window.location.href = "/Admin/home";
       })
     } else if (page == '/recoveryPassword') {
       
@@ -56,7 +57,7 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
       <main className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
-       <AppContext.Provider value={{modalGlobal, setModalGlobal}}>
+       <AppContext.Provider value={{modalGlobal, setModalGlobal, actionCancel, setActionCancel}}>
           <Component {...pageProps} />
        </AppContext.Provider>
       </main>

@@ -55,7 +55,7 @@ function selectStoreCache(){
     Auth.signIn({username, password})
     .then((cognitoUser) => {
         Auth.currentSession()
-        .then((userSession) => window.location.href = "/home")
+        .then((userSession) => window.location.href = "/Admin/home")
         .catch((err) =>{
           context.setModalGlobal(true)
           setModal({...modal, message:ErrorCognito(err), type: 'error'});
@@ -170,7 +170,7 @@ function selectStoreCache(){
             </form>
           </Tabs.Content>
         </Tabs.Root>
-        <Modals message={modal.message} type={modal.type}/>
+        <Modals message={modal.message} type={modal.type} size="little"/>
       </section>
   )
   }
