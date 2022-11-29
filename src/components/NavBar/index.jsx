@@ -10,16 +10,13 @@ import Modals from '../Modals'
 import {useContext} from 'react';
 import AppContext from '../AppContext'
 
-function index(props) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+function NavBar(props) {
     const router = useRouter()
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const context = useContext(AppContext)
     const page = props.page
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [menu, setMenu] = useState(true)
 
-    useEffect(()=>{
+    useEffect(() => {
         if(context.actionCancel === true){
             Auth.signOut()
             .then((data) => {
@@ -127,4 +124,4 @@ function index(props) {
   )
 }
 
-export default index
+export default NavBar
