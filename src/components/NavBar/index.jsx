@@ -24,7 +24,7 @@ function NavBar() {
     },[context.actionCancel])
 
   return (
-    <div className='flex'>
+    <div className='fixed left-[0px]'>
         <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
             <Tooltip.Root>
                 <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
