@@ -41,7 +41,9 @@ function NavBar() {
                     </Tooltip.Content>
                 </Tooltip.Portal>
             </Tooltip.Root>
+        </Tooltip.Provider>
         <div className={`bg-primary fixed h-screen flex transition duration-1000 left-[0px] ${menu ? "max-lg:left-[-120px]" : ""}  flex-col items-center border-r-2 border-terciary`}> 
+            <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`px-[10px] w-full h-[100px] max-sm:max-h-[80px] max-sm:max-w-[80px] flex justify-center items-center`}>
                         <Avatar.Root className="mt-[30px] max-lg:mt-[60px] flex flex-col">
@@ -55,7 +57,9 @@ function NavBar() {
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
+                </Tooltip.Root>
 
+                <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/home" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] max-sm:max-w-[80px] flex justify-center items-center`}>
                         <button className="IconButton" onClick={()=> window.location.href="/Admin/home"}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
@@ -65,7 +69,9 @@ function NavBar() {
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
-
+                </Tooltip.Root>
+                    
+                <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/files" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] max-sm:max-w-[80px] flex justify-center items-center`}>
                         <button className="IconButton" onClick={()=> window.location.href="/Admin/files"}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
@@ -75,7 +81,9 @@ function NavBar() {
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
+                </Tooltip.Root>
 
+                <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/clients" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] max-sm:max-w-[80px] flex justify-center items-center`}>
                         <button className="IconButton" onClick={()=> window.location.href="/Admin/clients"}> <PersonIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
@@ -85,20 +93,22 @@ function NavBar() {
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
+                </Tooltip.Root>
 
+                <Tooltip.Root>
                     <div className='absolute bottom-[80px] w-[80%] h-[3px] bg-terciary mt-[20px]'/>
-                    <Tooltip.Trigger asChild className={`absolute bottom-[20px] w-full flex justify-center`}>
-                        <button className="IconButton" onClick={() => context.setModalGlobal(true)} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
-                    </Tooltip.Trigger>
-                    <Tooltip.Portal>
+                        <Tooltip.Trigger asChild className={`absolute bottom-[20px] w-full flex justify-center`}>
+                            <button className="IconButton" onClick={() => context.setModalGlobal(true)} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
                             <p className='ml-[5px] text-[20px] font-[500] text-red'>Sair</p>
                             <Tooltip.Arrow width={15} height={10} className="fill-red"/>
                         </Tooltip.Content>
-                    </Tooltip.Portal>
+                        </Tooltip.Portal>
                 </Tooltip.Root>
-                </div>
             </Tooltip.Provider>
+            </div>
         <Modals message={"Tem certeza que deseja sair da sua conta?"} type={"error"} size="big"/>
     </div>
   )
