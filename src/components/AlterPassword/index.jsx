@@ -1,6 +1,6 @@
 import {EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { useEffect, useState, useContext } from 'react';
-import { useRouter } from 'next/dist/client/router'
+import { useState, useContext, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Auth} from 'aws-amplify';
 import Modals from '../Modals'
 import AppContext from '../AppContext';
@@ -9,6 +9,8 @@ import ErrorCognito from '../ErrorCognito';
 
 
 export function AlterPassword(){
+  const params = useSearchParams()
+  const email = params.get('email')
   const context = useContext(AppContext)
   const router = useRouter()
   const [modal, setModal] = useState({message: "", type:""})
@@ -17,11 +19,11 @@ export function AlterPassword(){
 
   function TradePassword(e){
     e.preventDefault()
-      Auth.forgotPasswordSubmit(router.query.email, dataUser.code, dataUser.password)
+      Auth.forgotPasswordSubmit(email, dataUser.code, dataUser.password)
       .then(data => {
         context.setModalGlobal(true)
         setModal({message: "Senha alterada com sucesso!", type: "sucess"})
-        setTimeout(() => {router.push({pathname: "/",});}, 2000)
+        setTimeout(() => {router.push("/");}, 1000)
       })
       .catch(err => {
         context.setModalGlobal(true)
@@ -30,16 +32,10 @@ export function AlterPassword(){
   }
 
   useEffect(() => {
-    if(localStorage.token === undefined){
-      router.push({
-        pathname: "/",
-      })
-    } else if (localStorage.token != router.query.token){
-      router.push({
-        pathname: "/",
-      })
+    if(email === null){
+      router.push("/")
     }
-  },[router])
+  },[email, router])
 
 return (
         <section className="bg-primary text-black w-screen h-screen flex flex-col justify-center items-center">

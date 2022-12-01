@@ -2,24 +2,21 @@ import * as Tabs from '@radix-ui/react-tabs';
 import styles from "./signIn.module.css"
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { CheckIcon, EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { useState, useContext} from 'react';
+import { useState, useContext, use} from 'react';
 import InputMask from "react-input-mask";
 import Link from 'next/link'
 import { Auth, Cache} from 'aws-amplify';
 import Modals from '../Modals'
 import AppContext from '../AppContext';
-import { useRouter } from 'next/dist/client/router'
 import ErrorCognito from '../ErrorCognito';
-
-
-
+import { useRouter } from 'next/navigation';
 
 function Signin(){
+  const router = useRouter()
   const context = useContext(AppContext)
   const [dataUser, setDataUser] = useState({email: "", password: "", checked: false})
   const [eye, setEye] = useState(false)
   const [modal, setModal] = useState({message: "", type: "error"})
-  const router = useRouter()
 
 function selectStoreCache(){
   localStorage.setItem("sessionStorage", false)
@@ -54,7 +51,7 @@ function selectStoreCache(){
     Auth.signIn({username, password})
     .then((cognitoUser) => {
         Auth.currentSession()
-        .then((userSession) => window.location.href = "/Admin/home")
+        .then((userSession) => window.location.href = "/Admin")
         .catch((err) =>{
           context.setModalGlobal(true)
           setModal({...modal, message:ErrorCognito(err), type: 'error'});
@@ -66,20 +63,20 @@ function selectStoreCache(){
   }
 
   function resetPassword() {
-    var result = '';
-    for (var i = 80; i > 0; --i) result += (Math.floor(Math.random()*256)).toString(16);     
-    Auth.forgotPassword(dataUser.email)
-    .then(data =>   {
-      router.push({
-        pathname: "/recoveryPassword",
-        query: { token: result, email: dataUser.email },
-      }); 
-      localStorage.setItem("token", result)
-    })
-    .catch(err => {
-      context.setModalGlobal(true)
-      setModal({...modal, message:ErrorCognito(err), type: 'error'});
-    });
+    if(dataUser.email === ""){
+        context.setModalGlobal(true)
+        setModal({...modal, message:"Preencha o campo de email para alterar a senha", type: 'error'});
+    } else{  
+      Auth.forgotPassword(dataUser.email)
+      .then(data =>   {
+        router.push("/recoveryPassword?email=" + dataUser.email)
+      })
+      .catch(err => {
+        console.log(err.message);
+        context.setModalGlobal(true)
+        setModal({...modal, message:ErrorCognito(err), type: 'error'});
+      });
+    }
   }
     return (
       <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">

@@ -4,7 +4,7 @@ function ComponentHome () {
   return (
     <section>
       <NavBar />
-      <p className='text-black'>Home</p>
+      <p className='text-black'>Homeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
     </section>
   )
 }

@@ -1,4 +1,5 @@
-import {AlterPassword} from "../components/AlterPassword"
+'use client'
+import {AlterPassword} from "../../components/AlterPassword"
 
 function RecoveryPassword(){
   return (
