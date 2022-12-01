@@ -22,7 +22,7 @@ module.exports = {
         secondary: "#AAAAAA",
         terciary: "#9E9E9E",
         strong: "#8F8F8F",
-        modals: "#D9D9D9",
+        hilight: "#D9D9D9",
         red: "#BD0303",
         green: "#087E14"
       }

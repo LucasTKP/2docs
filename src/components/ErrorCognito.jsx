@@ -1,7 +1,6 @@
 
 function ErrorCognito(props) {
     const errors = props
-
         var message = errors.message
         if(errors.code === "UserNotFoundException"){
           message = "Este usuário não esta cadastrado ou foi desativado."
@@ -14,7 +13,6 @@ function ErrorCognito(props) {
         } else if (errors.code === "InvalidPasswordException"){
           message = "A senha deve conter caracteres minúsculos." 
         }
-
     return message
 }
 
