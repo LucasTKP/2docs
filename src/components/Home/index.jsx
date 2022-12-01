@@ -1,11 +1,10 @@
 import NavBar from '../NavBar'
 
-
 function ComponentHome () {
-
   return (
     <section>
-      <NavBar page="home"/>
+      <NavBar />
+      <p className='text-black'>Home</p>
     </section>
   )
 }

@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-comment-textnodes */
 import * as Tabs from '@radix-ui/react-tabs';
 import styles from "./signIn.module.css"
 import * as Checkbox from '@radix-ui/react-checkbox';

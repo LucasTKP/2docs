@@ -52,14 +52,11 @@ export default function MyApp({ Component, pageProps }) {
     }
     },[Component])
 
-
-
-
   return (
       <main className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
-       <AppContext.Provider value={{modalGlobal, setModalGlobal, actionCancel, setActionCancel}}>
-          <Component {...pageProps} />
-       </AppContext.Provider>
+        <AppContext.Provider value={{modalGlobal, setModalGlobal, actionCancel, setActionCancel}}>
+            <Component {...pageProps}/>
+        </AppContext.Provider>
       </main>
   )
 }

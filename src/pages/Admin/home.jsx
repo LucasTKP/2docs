@@ -1,8 +1,7 @@
-import ComponentHome  from '../../components/Home'
-
+import ComponentHome from '../../components/Home'
 function Home (){
   return(
-    <ComponentHome />
+      <ComponentHome />
   )
 }
 

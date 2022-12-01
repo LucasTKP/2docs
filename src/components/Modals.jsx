@@ -36,19 +36,19 @@ function Modal(props) {
 
               {subMensagem1 != undefined ? 
                 <div className='flex items-start mt-[20px]'>
-                  <div className='min-w-[20px] min-h-[20px] bg-modals rounded-full ml-[20px]'/>
+                  <div className='min-w-[20px] min-h-[20px] bg-hilight rounded-full ml-[20px]'/>
                   <p className='text-[20px] ml-[8px]'>{subMensagem1}</p>
                 </div>
                 :<></>}
 
               {subMensagem2 != undefined ? 
                 <div className='flex items-start mt-[20px]'>
-                  <div className='min-w-[20px] min-h-[20px] bg-modals rounded-full ml-[20px]'/>
+                  <div className='min-w-[20px] min-h-[20px] bg-hilight rounded-full ml-[20px]'/>
                   <p className='text-[20px] ml-[8px]'>{subMensagem2}</p>
                 </div>
               :<></>}
               </div>
-              <div className='flex w-full justify-end gap-4 bg-modals self-end  pr-[10px] py-[10px] rounded-b-[4px]'>
+              <div className='flex w-full justify-end gap-4 bg-hilight self-end  pr-[10px] py-[10px] rounded-b-[4px]'>
                   <button onClick={() => (context.setActionCancel(false), context.setModalGlobal(false))} className='bg-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
                   <button onClick={() => (context.setActionCancel(true), context.setModalGlobal(false))} className='bg-red/40 border-2 border-red hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] text-white '>Confirmar</button>
                 </div>

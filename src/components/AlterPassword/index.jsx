@@ -39,8 +39,8 @@ export function AlterPassword(){
         pathname: "/",
       })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  },[router])
+
 return (
         <section className="bg-primary text-black w-screen h-screen flex flex-col justify-center items-center">
           <div className="w-[400px] max-lsm:w-[320px]">
