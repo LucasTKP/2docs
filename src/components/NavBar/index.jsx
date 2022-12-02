@@ -42,13 +42,12 @@ function NavBar() {
                 </Tooltip.Portal>
             </Tooltip.Root>
         </Tooltip.Provider>
-        <div className={`bg-primary fixed h-screen flex transition duration-1000 left-[0px] ${menu ? "max-lg:left-[-120px]" : ""}  flex-col items-center border-r-2 border-terciary`}> 
+        <div className={`bg-primary w-[100px] max-sm:max-w-[80px] fixed h-screen flex transition duration-1000 left-[0px] ${menu ? "max-lg:left-[-120px]" : ""}  flex-col items-center border-r-2 border-terciary`}> 
             <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
                 <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`px-[10px] w-full h-[100px] max-sm:max-h-[80px] max-sm:max-w-[80px] flex justify-center items-center`}>
+                    <Tooltip.Trigger asChild className={`px-[10px] w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
                         <Avatar.Root className="mt-[30px] max-lg:mt-[60px] flex flex-col">
-                            <Avatar.Image className="w-[80px] h-[80px] max-sm:w-[70px] max-sm:h-[70px]  rounded-full" src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80"alt="Colm Tuite"/>
-                            <div className='w-[90%] h-[3px] bg-terciary mt-[20px]'/>
+                            <Avatar.Image className="min-w-[80px]  min-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]   rounded-full" src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80"alt="Colm Tuite"/>
                         </Avatar.Root>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
@@ -58,10 +57,10 @@ function NavBar() {
                         </Tooltip.Content>
                     </Tooltip.Portal>
                 </Tooltip.Root>
-
+                <div className='w-[90%] h-[3px] bg-terciary mt-[20px]'/>
                 <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/home" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] max-sm:max-w-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> window.location.href="/Admin/home"}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
+                        <button className="IconButton" onClick={()=> window.location.href="/Admin"}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -72,8 +71,8 @@ function NavBar() {
                 </Tooltip.Root>
                     
                 <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/files" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] max-sm:max-w-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> window.location.href="/Admin/files"}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Arquivos" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
+                        <button className="IconButton" onClick={()=> window.location.href="/Admin/Arquivos"}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -84,8 +83,8 @@ function NavBar() {
                 </Tooltip.Root>
 
                 <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/clients" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] max-sm:max-w-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> window.location.href="/Admin/clients"}> <PersonIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Clientes" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
+                        <button className="IconButton" onClick={()=> window.location.href="/Admin/Clientes"}> <PersonIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
