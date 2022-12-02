@@ -1,11 +1,25 @@
+
 'use client'
-import { Poiret_One, Poppins } from '@next/font/google'
+import { Inter, Poiret_One, Poppins } from '@next/font/google'
 import {Amplify, Auth, Cache} from 'aws-amplify'
 import { useEffect, useState } from 'react';
 import awsconfig from '../../aws-exports'
 import "../../styles/globals.css";
 import AppContext from '../components/AppContext'
 import { usePathname } from 'next/navigation';
+
+
+const poiretOne = Poiret_One({
+  display: 'swap',
+  weight: ['400'],
+  variable: '--font-poiretOne',
+})
+
+const poppins = Poppins({
+  display: 'swap',
+  weight: ['400'],
+  variable: '--font-poppins',
+})
 
 
 export default function RootLayout({
@@ -16,20 +30,6 @@ export default function RootLayout({
 
   Amplify.configure({...awsconfig, ssr: true})
 
-// const poiretOne = Poiret_One({
-//   display: 'swap',
-//   weight: ['400'],
-//   variable: '--font-poiretOne',
-// })
-
-// const poppins = Poppins({
-//   display: 'swap',
-//   weight: ['400'],
-//   variable: '--font-poppins',
-// })
-const path = usePathname()
-
-
 useEffect(() => {
   const sessionStorageCache = Cache.createInstance({
     keyPrefix: "auth",
@@ -39,6 +39,7 @@ useEffect(() => {
   Auth.configure({
     storage: sessionStorageCache  
   });
+
 
 const page = window.location.pathname
 if(page == '/'){
@@ -63,7 +64,7 @@ const [actionCancel, setActionCancel] = useState(false)
   return (
     <html>
       <head />
-      <body >
+      <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
       <AppContext.Provider value={{modalGlobal, setModalGlobal, actionCancel, setActionCancel}}>
           {children}
       </AppContext.Provider>

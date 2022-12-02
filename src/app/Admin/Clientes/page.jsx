@@ -1,4 +1,3 @@
-'use client'
 import ComponentClients from '../../../components/Clients'
 
 function Clientes(){

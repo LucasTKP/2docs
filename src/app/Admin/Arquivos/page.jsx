@@ -1,4 +1,3 @@
-'use client'
 import ComponentFiles from '../../../components/Files'
 
 function Arquivos(){

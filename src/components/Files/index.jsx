@@ -1,3 +1,4 @@
+'use client'
 import NavBar from '../NavBar'
 
 function ComponentFiles () {

@@ -47,7 +47,7 @@ function NavBar() {
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`px-[10px] w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
                         <Avatar.Root className="mt-[30px] max-lg:mt-[60px] flex flex-col">
-                            <Avatar.Image className="min-w-[80px] w-[80px] min-h-[80px] max-sm:w-[70px] max-sm:h-[70px]  rounded-full" src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80"alt="Colm Tuite"/>
+                            <Avatar.Image className="min-w-[80px]  min-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]   rounded-full" src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80"alt="Colm Tuite"/>
                         </Avatar.Root>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
