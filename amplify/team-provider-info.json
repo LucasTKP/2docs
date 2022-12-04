@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "2docs": {}
+      },
+      "api": {
+        "2docs": {}
+      },
+      "storage": {
+        "s32docss3": {}
       }
     }
   }

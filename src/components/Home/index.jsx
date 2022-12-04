@@ -1,9 +1,11 @@
+import NavBar from '../NavBar'
+
 function ComponentHome () {
   return (
-    <div>
-        <p>asdsda</p>
-        <div></div>
-    </div>
+    <section>
+      <NavBar />
+      <p className='text-black'>Homeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
+    </section>
   )
 }
 

@@ -1,0 +1,6 @@
+{
+  "AppSyncApiName": "2docs",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthModeLastUpdated": "2022-12-03T22:44:13.553Z"
+}
