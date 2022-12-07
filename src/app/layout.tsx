@@ -39,7 +39,7 @@ useEffect(() => {
         console.log(uid)
       }
     } else {
-      if(page != "/" || page == "/recoveryPassword"){
+      if(page != "/"){
         window.location.href = "/"
       }
     }
