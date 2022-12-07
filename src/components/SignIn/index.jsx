@@ -3,86 +3,89 @@ import styles from "./signIn.module.css"
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { CheckIcon, EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { useState, useContext, use} from 'react';
-import InputMask from "react-input-mask";
-import Link from 'next/link'
-import { Auth, Cache} from 'aws-amplify';
 import Modals from '../Modals'
 import AppContext from '../AppContext';
-import ErrorCognito from '../ErrorCognito';
+import ErrorFirebase from '../ErrorFirebase';
 import { useRouter } from 'next/navigation';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { auth, db } from '../../../firebase'
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 function Signin(){
-  const router = useRouter()
   const context = useContext(AppContext)
-  const [dataUser, setDataUser] = useState({email: "", password: "", checked: false})
+  const [dataUser, setDataUser] = useState({email: "", password: "", cnpj:"", checked: false})
   const [eye, setEye] = useState(false)
   const [modal, setModal] = useState({message: "", type: "error"})
 
-function selectStoreCache(){
-  localStorage.setItem("sessionStorage", false)
-  if (dataUser.checked) {
-    const localStorageCache = Cache.createInstance({
-        keyPrefix: "auth",
-        storage: window.localStorage
-    });
-
-    Auth.configure({
-        storage: localStorageCache
-    });
-} else {
-    localStorage.setItem("sessionStorage", true)
-    const sessionStorageCache = Cache.createInstance({
-        keyPrefix: "auth",
-        storage: window.sessionStorage
-    });
-
-    Auth.configure({
-        storage: sessionStorageCache
-    });
-}
-}
-  
-  function handleSubmit(e) {
-    e.preventDefault();
-    selectStoreCache()
-    const username = dataUser.email
-    const password = dataUser.password
-
-    Auth.signIn({username, password})
-    .then((cognitoUser) => {
-        Auth.currentSession()
-        .then((userSession) => window.location.href = "/Admin")
-        .catch((err) =>{
-          context.setModalGlobal(true)
-          setModal({...modal, message:ErrorCognito(err), type: 'error'});
-        });
-    }).catch((err) => {
-      context.setModalGlobal(true)
-      setModal({...modal, message:ErrorCognito(err), type: 'error'});
-    });
+  function SignInEmail(e){
+    e.preventDefault()
+    SignIn(dataUser.email)
   }
 
-  function resetPassword() {
-    if(dataUser.email === ""){
-        context.setModalGlobal(true)
-        setModal({...modal, message:"Preencha o campo de email para alterar a senha", type: 'error'});
-    } else{  
-      Auth.forgotPassword(dataUser.email)
-      .then(data =>   {
-        router.push("/recoveryPassword?email=" + dataUser.email)
-      })
-      .catch(err => {
-        console.log(err.message);
-        context.setModalGlobal(true)
-        setModal({...modal, message:ErrorCognito(err), type: 'error'});
+  async function SignInCnpj(e){
+    e.preventDefault()
+    const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
+    const data = await getDocs(q);
+    if(data.docs[0] === undefined){
+      context.setModalGlobal(true)
+      setModal({message: "Este usuário não foi cadastrado."})
+    } else {
+      data.forEach((doc) => {
+        SignIn(doc.data().email)
       });
     }
   }
+  function SignIn(email){
+    signInWithEmailAndPassword(auth, email, dataUser.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+      })
+      .catch((error) => {
+        context.setModalGlobal(true)
+        setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
+      });
+  }
+
+  function AlterPassword(email){
+    sendPasswordResetEmail(auth, email)
+    .then((data) => {
+      context.setModalGlobal(true)
+      setModal({...modal, message:`Enviamos um link para o email: ${email}, Verifique a caixa de SPAN.`, type: 'sucess'});
+    })
+  .catch((error) => {
+    context.setModalGlobal(true)
+    setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
+  });
+  }
+
+  async function AlterPasswordCnpj(){
+    const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
+    const data = await getDocs(q);
+    if(data.docs[0] === undefined){
+      context.setModalGlobal(true)
+      setModal({message: "Este usuário não foi cadastrado."})
+    } else {
+      data.forEach((doc) => {
+        AlterPassword(doc.data().email)
+      });
+    }
+  }
+
+  const cnpjMask = (value) => {
+    return value
+      .replace(/\D+/g, '') // não deixa ser digitado nenhuma letra
+      .replace(/(\d{2})(\d)/, '$1.$2') // captura 2 grupos de número o primeiro com 2 digitos e o segundo de com 3 digitos, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de número
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1/$2') // captura 2 grupos de número o primeiro e o segundo com 3 digitos, separados por /
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .replace(/(-\d{2})\d+?$/, '$1') // captura os dois últimos 2 números, com um - antes dos dois números
+    } 
+
     return (
       <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
           <p className="text-[40px] font-poiretOne">Login</p>
-          <p className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
+          <p onClick={() => SearchCnpj()} className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
           <Tabs.List className="w-full mt-[20px] border-b-2 border-black flex justify-between" aria-label="Manage your account">
             <Tabs.Trigger id={styles.tabsTrigger1} className={`text-[22px] w-[50%] rounded-tl-[8px] py-[5px]}`}value="tab1">
               Email
@@ -92,7 +95,7 @@ function selectStoreCache(){
             </Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content className="mt-[20px]" value="tab1">
-            <form onSubmit={handleSubmit} className="outline-none">
+            <form onSubmit={SignInEmail} className="outline-none">
               <fieldset className="flex flex-col">
                 <label className="text-[18px]" htmlFor="Email">
                   Email
@@ -121,7 +124,7 @@ function selectStoreCache(){
                     Lembrar de mim
                   </label>
                 </div>
-                <button type="button" onClick={resetPassword} className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
+                <button type="button" onClick={() => AlterPassword(dataUser.email)} className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
               </div>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
@@ -129,12 +132,12 @@ function selectStoreCache(){
             </form>
           </Tabs.Content>
           <Tabs.Content className="mt-[20px] TabsContent" value="tab2">
-          <form onSubmit={"teste"} className="">
+          <form onSubmit={SignInCnpj} className="">
               <fieldset className="flex flex-col">
-                <label className="text-[18px]" htmlFor="Email">
-                  CNPJ
-                </label>
-                <InputMask mask="99.999.999/9999-99" required type="text" onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} className="pl-[5px] text-[18px] bg-[#0000] border-[1px] border-black rounded-[8px] outline-none py-[10px]" placeholder='Digite seu CNPJ' />
+              <label className='flex flex-col'>
+                CNPJ
+                <input  required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='w-full text-[18px] bg-[#0000] outline-none py-[10px] border-[1px] border-black rounded-[8px] pl-[5px]' placeholder='Digite o cnpj'/>
+              </label>
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
                 <label className="text-[18px]" htmlFor="username">
@@ -158,7 +161,7 @@ function selectStoreCache(){
                     Lembrar de mim
                   </label>
                 </div>
-                  <Link href="/recoveryPassword" className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</Link>
+                <button type="button" onClick={() => AlterPasswordCnpj()} className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
               </div>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar

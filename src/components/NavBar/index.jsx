@@ -9,22 +9,32 @@ import Modals from '../../components/Modals'
 import {useContext} from 'react';
 import AppContext from '../../components/AppContext'
 import { usePathname } from 'next/navigation'
+import { signOut } from "firebase/auth";
+import { auth } from '../../../firebase'
 
 function NavBar() {
     const path = usePathname()
     const context = useContext(AppContext)
     const [menu, setMenu] = useState(true)
+    const [modal, setModal] = useState({message: "", type:"", size:""})
 
     useEffect(() => {
         if(context.actionCancel === true){
-            Auth.signOut()
-            .then((data) => window.location.href="/")
-            .catch((err) =>  console.log(err));
+            signOut(auth).then(() => {
+            }).catch((error) => {
+
+            });
         }
     },[context.actionCancel])
 
+    useEffect(() => {
+        if(context.modalGlobal === false){
+          setModal({message: "", type:"", size:""})
+        }
+      }, [context.modalGlobal]);
+
   return (
-    <div className='fixed left-[0px]'>
+    <div className='fixed left-[0px] z-10'>
         <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
             <Tooltip.Root>
                 <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
@@ -36,7 +46,7 @@ function NavBar() {
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                     <Tooltip.Content  side="right" sideOffset={10}>
-                        <p className='ml-[5px] text-[20px] font-[500]'>{menu ? "Menu" : "Fechar Menu"}</p>
+                        <p className='ml-[5px] text-[20px] font-[500] text-black'>{menu ? "Menu" : "Fechar Menu"}</p>
                         <Tooltip.Arrow width={15} height={10}/>
                     </Tooltip.Content>
                 </Tooltip.Portal>
@@ -52,7 +62,7 @@ function NavBar() {
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
-                            <p className='ml-[5px] text-[20px] font-[500]'>Foto de Perfil</p>
+                            <p className='ml-[5px] text-[20px] font-[500] text-black'>Foto de Perfil</p>
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
@@ -64,7 +74,7 @@ function NavBar() {
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
-                            <p className='ml-[5px] text-[20px] font-[500]'>Pagina Inicial</p>
+                            <p className='ml-[5px] text-[20px] font-[500] text-black'>Pagina Inicial</p>
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
@@ -76,7 +86,7 @@ function NavBar() {
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
-                            <p className='ml-[5px] text-[20px] font-[500]'>Arquivos</p>
+                            <p className='ml-[5px] text-[20px] font-[500] text-black'>Arquivos</p>
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
@@ -88,7 +98,7 @@ function NavBar() {
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
-                            <p className='ml-[5px] text-[20px] font-[500]'>Clientes</p>
+                            <p className='ml-[5px] text-[20px] font-[500] text-black'>Clientes</p>
                             <Tooltip.Arrow width={15} height={10}/>
                         </Tooltip.Content>
                     </Tooltip.Portal>
@@ -97,7 +107,7 @@ function NavBar() {
                 <Tooltip.Root>
                     <div className='absolute bottom-[80px] w-[80%] h-[3px] bg-terciary mt-[20px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] w-full flex justify-center`}>
-                            <button className="IconButton" onClick={() => context.setModalGlobal(true)} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
+                            <button className="IconButton" onClick={() => (context.setModalGlobal(true), setModal({message:"Tem certeza que deseja sair da sua conta?", type:"error", size:"big"}))} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -108,7 +118,7 @@ function NavBar() {
                 </Tooltip.Root>
             </Tooltip.Provider>
             </div>
-        <Modals message={"Tem certeza que deseja sair da sua conta?"} type={"error"} size="big"/>
+        <Modals message={modal.message} type={modal.type} size={modal.size}/>
     </div>
   )
 }
