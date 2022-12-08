@@ -1,13 +1,12 @@
 
 'use client'
-import { Inter, Poiret_One, Poppins } from '@next/font/google'
-import {Amplify, Auth, Cache} from 'aws-amplify'
+import {Poiret_One, Poppins } from '@next/font/google'
 import { useEffect, useState } from 'react';
-import awsconfig from '../../aws-exports'
 import "../../styles/globals.css";
 import AppContext from '../components/AppContext'
 import { usePathname } from 'next/navigation';
-
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../../firebase'
 
 const poiretOne = Poiret_One({
   display: 'swap',
@@ -21,45 +20,32 @@ const poppins = Poppins({
   variable: '--font-poppins',
 })
 
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
 
-  Amplify.configure({...awsconfig, ssr: true})
-
-useEffect(() => {
-  const sessionStorageCache = Cache.createInstance({
-    keyPrefix: "auth",
-    storage:localStorage.sessionStorage === "true" ? window.sessionStorage :window.localStorage
-  });
-
-  Auth.configure({
-    storage: sessionStorageCache  
-  });
-
-
-const page = window.location.pathname
-if(page == '/'){
-    Auth.currentSession()
-    .then((userSession) => {
-      window.location.href = "/Admin";
-  })
-} else if (page == '/recoveryPassword') {
-  
-} else {
-  Auth.currentSession()
-  .catch((err) => {
-    console.log(err)
-    window.location.href = "/";
-  });
-}
-},[children])
-
 const [modalGlobal, setModalGlobal] = useState(false)
 const [actionCancel, setActionCancel] = useState(false)
+
+useEffect(() => {
+  const page = window.location.pathname
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      if(page === "/"){
+        window.location.href = "/Admin"
+        const uid = user.uid;
+        console.log(uid)
+      }
+    } else {
+      if(page != "/"){
+        window.location.href = "/"
+      }
+    }
+  });
+},[children])
+
 
   return (
     <html>

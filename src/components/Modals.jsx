@@ -2,6 +2,7 @@ import {useContext} from 'react';
 import AppContext from '../components/AppContext'
 
 function Modal(props) {
+  // console.log(props)
   const context = useContext(AppContext)
   const type = props.type
   const size = props.size
