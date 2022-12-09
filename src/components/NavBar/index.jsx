@@ -4,19 +4,37 @@ import { HomeIcon, FileTextIcon, PersonIcon } from '@radix-ui/react-icons';
 import * as Avatar from '@radix-ui/react-avatar';
 import iconExit from '../../../public/icons/exit.svg'
 import Image from 'next/image'
-import {Auth} from 'aws-amplify'
 import Modals from '../../components/Modals'
 import {useContext} from 'react';
 import AppContext from '../../components/AppContext'
 import { usePathname } from 'next/navigation'
-import { signOut } from "firebase/auth";
-import { auth } from '../../../firebase'
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import { db, storage, auth } from '../../../firebase'
+import { collection, query, where, getDocs } from "firebase/firestore";
+import {ref, getDownloadURL } from "firebase/storage";
 
 function NavBar() {
     const path = usePathname()
     const context = useContext(AppContext)
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState({message: "", type:"", size:""})
+    const [urlImageProfile, setUrlImageProfile] = useState(null)
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            GetUser(user.email)
+          });
+    },[])
+
+    async function GetUser(email){
+        const q = query(collection(db, "users"), where("email", "==", email));
+        var nameImage
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            setUrlImageProfile(doc.data().image)
+        });
+    }
 
     useEffect(() => {
         if(context.actionCancel === true){
@@ -57,7 +75,7 @@ function NavBar() {
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`px-[10px] w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
                         <Avatar.Root className="mt-[30px] max-lg:mt-[60px] flex flex-col">
-                            <Avatar.Image className="min-w-[80px]  min-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]   rounded-full" src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80"alt="Colm Tuite"/>
+                            <Avatar.Image onClick={() => GetUser()} className="min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]  max-sm:max-w-[70px] max-sm:max-h-[70px]  rounded-full" src={urlImageProfile} alt="Colm Tuite"/>
                         </Avatar.Root>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>

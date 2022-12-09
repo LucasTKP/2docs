@@ -2,13 +2,11 @@ import * as Tabs from '@radix-ui/react-tabs';
 import styles from "./signIn.module.css"
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { CheckIcon, EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { useState, useContext, use} from 'react';
+import { useState, useContext} from 'react';
 import Modals from '../Modals'
 import AppContext from '../AppContext';
-import ErrorFirebase from '../ErrorFirebase';
-import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth, db } from '../../../firebase'
+import { auth, db} from '../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 function Signin(){
@@ -19,14 +17,17 @@ function Signin(){
 
   function SignInEmail(e){
     e.preventDefault()
+    context.setLoading(true)
     SignIn(dataUser.email)
   }
 
   async function SignInCnpj(e){
     e.preventDefault()
+    context.setLoading(true)
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
     const data = await getDocs(q);
     if(data.docs[0] === undefined){
+      context.setLoading(false)
       context.setModalGlobal(true)
       setModal({message: "Este usuário não foi cadastrado."})
     } else {
@@ -38,32 +39,52 @@ function Signin(){
   function SignIn(email){
     signInWithEmailAndPassword(auth, email, dataUser.password)
       .then((userCredential) => {
+        context.setLoading(false)
         const user = userCredential.user;
+        console.log(user)
       })
       .catch((error) => {
+        context.setLoading(false)
         context.setModalGlobal(true)
         setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
       });
   }
 
   function AlterPassword(email){
+    if(dataUser.cnpj === ""){
+      return (
+        context.setModalGlobal(true),
+        setModal({message: "Preencha o campo de email.", type:"error", size:"little"})
+      )
+    }
+
     sendPasswordResetEmail(auth, email)
     .then((data) => {
       context.setModalGlobal(true)
       setModal({...modal, message:`Enviamos um link para o email: ${email}, Verifique a caixa de SPAN.`, type: 'sucess'});
+      context.setLoading(false)
     })
   .catch((error) => {
     context.setModalGlobal(true)
     setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
+    context.setLoading(false)
   });
   }
 
   async function AlterPasswordCnpj(){
+    if(dataUser.cnpj === ""){
+      return (
+        context.setModalGlobal(true),
+        setModal({message: "Preencha o campo de cnpj.", type:"error", size:"little"})
+      )
+    }
+    context.setLoading(true)
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
     const data = await getDocs(q);
     if(data.docs[0] === undefined){
+      context.setLoading(false)
       context.setModalGlobal(true)
-      setModal({message: "Este usuário não foi cadastrado."})
+      setModal({message: "Este usuário não foi cadastrado.", type:"error", size:"little"})
     } else {
       data.forEach((doc) => {
         AlterPassword(doc.data().email)

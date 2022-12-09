@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    domains: ['firebasestorage.googleapis.com'],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
@@ -10,7 +11,8 @@ const nextConfig = {
     fontLoaders: [
       { loader: '@next/font/google', options: { subsets: ['latin'] } },
     ],
-  }
+  },
+  reactStrictMode: false
 }
 
 
