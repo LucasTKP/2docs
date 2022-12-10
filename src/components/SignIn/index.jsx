@@ -8,6 +8,7 @@ import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth, db} from '../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
+import ErrorFirebase from '../ErrorFirebase'
 
 function Signin(){
   const context = useContext(AppContext)
