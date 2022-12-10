@@ -1,5 +1,4 @@
-
-function ErrorCognito(props) {
+function ErrorFirebase(props) {
     const errors = props
     console.log(errors.code)
     var message = errors.message
@@ -21,4 +20,4 @@ function ErrorCognito(props) {
     return message
 }
 
-export default ErrorCognito
+export default ErrorFirebase

@@ -7,10 +7,11 @@ import Modals from '../Modals'
 import AppContext from '../AppContext';
 import ErrorFirebase from '../ErrorFirebase';
 import { auth, storage, db } from '../../../firebase'
-import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth"
+import { createUserWithEmailAndPassword} from "firebase/auth"
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, where, getDocs  } from "firebase/firestore";  
-import { EyeClosedIcon, EyeOpenIcon, Pencil1Icon, FileTextIcon } from '@radix-ui/react-icons';
+import { EyeClosedIcon, EyeOpenIcon, Pencil1Icon, FileTextIcon, ArrowDownIcon } from '@radix-ui/react-icons';
+import ArrowFilter from '../../../public/icons/arrowFilter.svg'
 
 
 function ComponentClients(){
@@ -24,7 +25,7 @@ function ComponentClients(){
   const [eye , setEye] = useState(false)
   const [users, setUsers] = useState([])
   const [table, setTable] = useState(false)
-  const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+  const [filter, setFilter] = useState({name: false, date:false, status:false})
   // <--------------------------------- Create User --------------------------------->
   async function UploadPhoto() {
     var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ.";
@@ -45,10 +46,11 @@ function ComponentClients(){
             SignUpDb(url)
         })
         .catch((error) => {
-            // Handle any errors
+          context.setLoading(false)
         }); 
       })
       .catch((error) => {
+        context.setLoading(false)
         context.setModalGlobal(true)
         setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
     });
@@ -78,19 +80,24 @@ function ComponentClients(){
   },[windowSignUp])
 
   async function SignUpDb(urlImage){
+    var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
+    var date = new Date() + ""
     try {
       const docRef = await addDoc(collection(db, "users"), {
-        name: dataUser.name,
+        name: name,
         email: dataUser.email,
         cnpj: dataUser.cnpj,
         password: dataUser.password,
         phone: dataUser.phone,
         company: dataUser.company,
         image: urlImage,
-        date: data(),
+        date: date,
         status: "Ativo",
         admin: false
       });
+      GetUsers()
+      context.setLoading(false)
+      setFile({...file, name: "padrao.png"})
       setFileDataURL(false)
       setDataUser({...dataUser, name: "", email:"", cnpj: "", phone:"", company:""})
       context.setLoading(false)
@@ -98,6 +105,7 @@ function ComponentClients(){
       setWindowSignUp(false)
       setModal({...modal, message: "Usuário cadastrado com sucesso.", type: "sucess", size:"little"})
     } catch (e) {
+      context.setLoading(false)
       context.setLoading(false)
       context.setModalGlobal(true)
       setModal({...modal, message: "Não foi possivel criar o usuário.", type: "error", size:"little"})
@@ -107,6 +115,7 @@ function ComponentClients(){
   function SignUp(e) {
     e.preventDefault()
     context.setLoading(true)
+    context.setLoading(true)
     const email = dataUser.email
     const password = dataUser.password
 
@@ -115,6 +124,7 @@ function ComponentClients(){
       UploadPhoto()
     })
     .catch((error) => {
+        context.setLoading(false)
         context.setLoading(false)
         context.setModalGlobal(true)
         setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
@@ -176,39 +186,152 @@ function ComponentClients(){
     }
   }, [context.modalGlobal]);
 
-  function data(){
-    const data = new Date()
-    const day = String(data.getDate()).padStart(2, '0')
-    const month = String(data.getMonth()).padStart(2, '0')
-    const year = data.getFullYear()
-    const date = `${day} de ${months[month]} de ${year}`
-    return date
-  }
-
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() =>{
+      context.setLoading(true)
       GetUsers()
   },[])
 
   async function GetUsers(){
-    if(users[0]){
-    } else {
+    context.setLoading(true)
+    const getUsers = []
+    
       const querySnapshot = await getDocs(collection(db, "users"), where("admin", "!=", true));
       querySnapshot.forEach((doc) => {
-        users.push(doc.data())
+        getUsers.push(doc.data())
+      });
+    setUsers(getUsers)
+    if(getUsers[0]){
+      setTable(true)
+    }
+    context.setLoading(false)
+  }
+
+  function filterName(){
+    const filterName = []
+    var namesUser = []
+      for (var i = 0; i < users.length; i++) {
+        namesUser.push({name:users[i].name, email: users[i].email})
+      }
+      if(filter.name){
+       namesUser.sort((a, b) => {
+        if (a.name > b.name)
+          return -1
+        if (a.name < b.name)
+          return 1  
+        return 0
+       })
+      } else {
+        namesUser.sort((a, b) => {
+          if (a.name < b.name)
+            return -1
+          if (a.name > b.name)
+            return 1  
+          return 0
+         })
+      }
+      namesUser.forEach(elelement =>{
+        for (var i = 0; i < users.length; i++) {
+          if(elelement.name === users[i].name && elelement.email === users[i].email){
+            filterName.push(users[i])
+           }
+        }
+      })
+   setUsers(filterName)
+  }
+
+  function filterStatus(){
+    const filterStatus = []
+    var namesStatus = []
+    if(filter.status){
+      namesStatus.push("Ativo")
+      namesStatus.push("Inativo")
+
+       namesStatus.sort((a, b) => {
+        if (a > b)
+          return -1
+        if (a < b)
+          return 1  
+        return 0
+       })
+     
+      namesStatus.forEach(elelement =>{
+        for (var i = 0; i < users.length; i++) {
+        if(elelement === users[i].status){
+           filterStatus.push(users[i])
+        }
+       }
+      })
+    } else {
+        namesStatus.push("Ativo")
+        namesStatus.push("Inativo")
+     namesStatus.forEach(elelement =>{
+      for (var i = 0; i < users.length; i++) {
+       if(elelement === users[i].status){
+        filterStatus.push(users[i])
+       }
+     }
+     })
+    }
+   setUsers(filterStatus)
+  }
+
+  function filterDate(){
+    const usersDate = []
+    var filterDate = []
+    for (var i = 0; i < users.length; i++) {
+      const date = new Date(users[i].date)
+      usersDate.push({date: date})
+     }
+
+    if(filter.date){
+      usersDate.sort(function(a,b) { 
+        return b.date.getTime() - a.date.getTime() 
+      });
+    } else {
+      usersDate.sort(function(a,b) { 
+        return a.date.getTime() - b.date.getTime() 
       });
     }
-    setTable(true)
+    for (var i = 0; i < usersDate.length; i++) {
+      const date = usersDate[i].date
+      usersDate[i].date = date + ""
+     }
+  usersDate.forEach(elelement =>{
+    for (var i = 0; i < users.length; i++) {
+    if(elelement.date == users[i].date){
+      filterDate.push(users[i])
+    }
+   }
+  })
+  setUsers(filterDate)
   }
-  
+
+  function formatDate(date){
+    var month
+    if (date.substr(4, 3) === "Jan") month = "Janeiro"
+    else if (date.substr(4, 3) === "Feb") month = "Fevereiro"
+    else if (date.substr(4, 3) === "Mar") month = "Março"
+    else if (date.substr(4, 3) === "Apr") month = "Abril"
+    else if (date.substr(4, 3) === "May") month = "Maio"
+    else if (date.substr(4, 3) === "Jun") month = "Junho"
+    else if (date.substr(4, 3) === "Jul") month = "Julho"
+    else if (date.substr(4, 3) === "Aug") month = "Augusto"
+    else if (date.substr(4, 3) === "Sep") month = "Setembro"
+    else if (date.substr(4, 3) === "Oct") month = "Outubro"
+    else if (date.substr(4, 3) === "Nov") month = "Novembro"
+    else if (date.substr(4, 3) === "Dec") month = "Dezembro"
+    return date.substr(8, 2) + " de " + month + " de " + date.substr(11, 4)
+  }
+
 return (
       <section className="bg-primary w-full h-screen  flex flex-col items-center text-black">
         <div className='w-[80%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-          <p onClick={()=> UploadPhoto()} className=' font-poiretOne text-[40px]'>Clientes</p>
+          <p className=' font-poiretOne text-[40px]'>Clientes</p>
           <div className='max-h-[600px]  h-[80%] max-lg:h-[70%] w-full relative border-[2px] border-terciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
               <div className='flex items-center'>
-                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>0 <span className='text-secondary'>Clientes</span></p>
+                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{table ? users.length : "0"} <span className='text-secondary'>Clientes</span></p>
                 <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px]"/>
                 <input required type="text" accept="image/*"  className='w-[300px] text-terciary max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px]' placeholder='Buscar' ></input>
               </div>
@@ -222,28 +345,49 @@ return (
                 <thead>
                   <tr className='bg-[#DDDDDD] border-b-[2px] border-t-[2px] border-terciary text-[20px]'>
                     <th className='py-[10px]'><input type="checkbox" className='w-[20px] h-[20px]'/></th>
-                    <th className='font-[400]'>Nome</th>
-                    <th className='font-[400]'>Email</th>
-                    <th className='font-[400]'>Data de cadastro</th>
-                    <th className='font-[400]'>Status</th>
+                    
+                    <th className='font-[400] text-left pl-[20px]'>
+                      <button onClick={() => (setFilter({...filter, name:! filter.name, status: false, date:false}), filterName())} className='flex items-center cursor-pointer'>
+                        <p>Nome</p> 
+                        <Image alt="Imagem de uma flecha" className={`ml-[10px] ${filter.name ? "rotate-180" : ""}`}src={ArrowFilter}/>
+                      </button>
+                    </th>
+
+                    <th className='font-[400] text-left pl-[20px]'>Email</th>
+
+                    <th className='font-[400]'>
+                      <button onClick={() => (setFilter({...filter, date:! filter.date, status: false, name:false}) ,filterDate())} className='flex items-center cursor-pointer'>
+                        <p>Data de cadastro</p>
+                        <Image alt="Imagem de uma flecha" className={`ml-[10px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
+                      </button>
+                    </th>
+
+                    <th className='font-[400]'>
+                    <button onClick={() => (setFilter({...filter, status:! filter.status, nome: false, date:false}), filterStatus())}  className='flex items-center cursor-pointer'>
+                        <p>Status</p>
+                        <Image alt="Imagem de uma flecha" className={`ml-[10px] ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter}/>
+                      </button>
+                    </th>
+
                     <th className='font-[400]'>Ações</th>
+
                   </tr>
                 </thead>
                 <tbody>
                 {users.map((user) => (
-                  <tr key={user} className='border-b-[1px] border-terciary text-[18px]'>
+                  <tr key={user.date} className='border-b-[1px] border-terciary text-[18px]'>
                     <th className='py-[10px]'><input type="checkbox" className='w-[20px] h-[20px]'/></th>
-                    <th className='font-[400] flex justify-center items-center'>
-                    <Image src={"https://firebasestorage.googleapis.com/v0/b/docs-1166e.appspot.com/o/images%2FlAs.nata.png?alt=media&token=c68b183e-b60f-40f1-b3df-40c333e7611b"} width={40} height={40} alt="Imagem de perfil do usuario." className='rounded-full mr-[10px]'/>
+                    <th className='font-[400] flex ml-[20px] items-center'>
+                    <Image src={user.image} width={40} height={40} alt="Imagem de perfil do usuario." className='rounded-full mr-[10px] max-w-[40px] max-h-[40px]'/>
                       <p>{user.name}</p>
                     </th>
-                    <th className='font-[400]'>{user.email}</th>
-                    <th className='font-[400]'>{user.date}</th>
+                    <th className='font-[400] text-left pl-[20px]'>{user.email}</th>
+                    <th className='font-[400]'>{formatDate(user.date)}</th>
                     <th className='font-[400] w-[100px]'>{user.status === "Ativo" ? 
-                      <div className='bg-greenV/30 rounded-full'>
+                      <div className='bg-greenV/30 border-greenV text-greenV border-[1px] rounded-full'>
                         Ativo
                       </div>:
-                      <div>
+                      <div className='bg-red/30 border-red text-red border-[1px] rounded-full'>
                         Inativo  
                       </div>}
                     </th>
@@ -281,7 +425,7 @@ return (
           {fileDataURL ? 
           <div className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[30px] max-sm:mt-[15px] relative'>
             <Image src={fileDataURL} width={180} height={180} alt="preview" className='w-full h-full rounded-full'/> 
-            <div onClick={()=> (setFileDataURL(false), setFile({name:"WhatsApp Image 2022-11-24 at 12.14.51.jpeg"}))} className='absolute right-[-10px] top-[5px] w-[30px] h-[4px] bg-strong rotate-45 after:w-[30px] after:h-[4px] after:bg-strong after:block after:rotate-90 '></div>
+            <div onClick={()=> (setFileDataURL(false), setFile({name:"padrao.png"}))} className='absolute right-[-10px] top-[5px] w-[30px] h-[4px] bg-strong rotate-45 after:w-[30px] after:h-[4px] after:bg-strong after:block after:rotate-90 '></div>
           </div>
 
           : 
