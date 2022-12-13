@@ -2,13 +2,11 @@ import {useContext} from 'react';
 import AppContext from '../components/AppContext'
 
 function Modal(props) {
-  // console.log(props)
   const context = useContext(AppContext)
   const type = props.type
   const size = props.size
-  const subMensagem1 = props.subMensagem1
-  const subMensagem2 = props.subMensagem2
-
+  const subMessage1 = props.subMessage1
+  const subMessage2 = props.subMessage2
   if(type === "error"){
     if(size === "little"){
       return (
@@ -33,19 +31,19 @@ function Modal(props) {
             <div className='bg-primary w-[450px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
               <div  className='bg-red w-full h-[10px] rounded-t-[4px]'/>
               <div className=' px-[10px]'>
-              <p className='text-[26px] mt-[10px]'>{props.message}</p>
+              <p className='text-[26px] mt-[10px]'>{props.message}<span className='font-[600] font-poppins'> {props.user}</span>?</p>
 
-              {subMensagem1 != undefined ? 
+              {subMessage1 != undefined ? 
                 <div className='flex items-start mt-[20px]'>
                   <div className='min-w-[20px] min-h-[20px] bg-hilight rounded-full ml-[20px]'/>
-                  <p className='text-[20px] ml-[8px]'>{subMensagem1}</p>
+                  <p className='text-[20px] ml-[8px]'>{subMessage1}</p>
                 </div>
                 :<></>}
 
-              {subMensagem2 != undefined ? 
+              {subMessage2 != undefined ? 
                 <div className='flex items-start mt-[20px]'>
                   <div className='min-w-[20px] min-h-[20px] bg-hilight rounded-full ml-[20px]'/>
-                  <p className='text-[20px] ml-[8px]'>{subMensagem2}</p>
+                  <p className='text-[20px] ml-[8px]'>{subMessage2}</p>
                 </div>
               :<></>}
               </div>

@@ -10,12 +10,10 @@ function ErrorFirebase(props) {
         message = "Este usuário não foi cadastrado."
       } else if(errors.code === "auth/email-already-in-use"){
         message = "Este email ja foi cadastrado em nosso sistema." 
-      } else if (errors.code === "InvalidPasswordException"){
-        message = "A senha deve conter caracteres minúsculos." 
-      } else if(errors === "No current user"){
-        message = "As credenciais do usuários estão incorretas."
-      } else if(errors.code === "UsernameExistsException"){
+      } else if(errors.code === "auth/email-already-exists"){
         message = "Já existe um usuário cadastrado com este email." 
+      } else if( errors.code === "auth/user-disabled"){
+        message = "Este usuário foi desabilidado"
       }
     return message
 }

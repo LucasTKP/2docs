@@ -24,7 +24,8 @@ module.exports = {
         strong: "#8F8F8F",
         hilight: "#D9D9D9",
         red: "#BD0303",
-        greenV: "#087E14"
+        greenV: "#087E14",
+        blue: "#005694"
       }
 
     },

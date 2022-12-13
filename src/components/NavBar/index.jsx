@@ -9,35 +9,32 @@ import {useContext} from 'react';
 import AppContext from '../../components/AppContext'
 import { usePathname } from 'next/navigation'
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { db, storage, auth } from '../../../firebase'
+import { db, auth } from '../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
-import {ref, getDownloadURL } from "firebase/storage";
+import axios from 'axios';
 
 function NavBar() {
     const path = usePathname()
     const context = useContext(AppContext)
     const [menu, setMenu] = useState(true)
-    const [modal, setModal] = useState({message: "", type:"", size:""})
+    const [modal, setModal] = useState({status: false, message: "", type:"", size:""})
     const [urlImageProfile, setUrlImageProfile] = useState(null)
 
-    useEffect(() => {
+    useEffect(() =>{
         onAuthStateChanged(auth, (user) => {
-            GetUser(user.email)
-          });
+            GetUsers(user.email)
+        });
     },[])
-
-    async function GetUser(email){
-        const q = query(collection(db, "users"), where("email", "==", email));
-        var nameImage
-
-        const querySnapshot = await getDocs(q);
+  
+    async function GetUsers(email){
+        const querySnapshot = await getDocs(collection(db, "users"), where("email", "==", email));
         querySnapshot.forEach((doc) => {
             setUrlImageProfile(doc.data().image)
         });
     }
 
     useEffect(() => {
-        if(context.actionCancel === true){
+        if(context.actionCancel === true && modal.status === true){
             signOut(auth).then(() => {
             }).catch((error) => {
 
@@ -47,9 +44,15 @@ function NavBar() {
 
     useEffect(() => {
         if(context.modalGlobal === false){
-          setModal({message: "", type:"", size:""})
+          setModal({...modal, message: "", type:"", size:""})
         }
       }, [context.modalGlobal]);
+
+      async function setAdminAuth(){
+        const domain = new URL(window.location.href).origin
+        const result = await axios.post(`${domain}/api/users/setAdmin`, {user: "fuQZiLm4Xta8O28db6P7bmir5Ee2"})
+        console.log(result)
+      }
 
   return (
     <div className='fixed left-[0px] z-10'>
@@ -75,7 +78,7 @@ function NavBar() {
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`px-[10px] w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
                         <Avatar.Root className="mt-[30px] max-lg:mt-[60px] flex flex-col">
-                            <Avatar.Image onClick={() => GetUser()} className="min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]  max-sm:max-w-[70px] max-sm:max-h-[70px]  rounded-full" src={urlImageProfile} alt="Colm Tuite"/>
+                            <Avatar.Image onClick={() => setAdminAuth()} width={80} height={80} className="cursor-pointer min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]  max-sm:max-w-[70px] max-sm:max-h-[70px]  rounded-full" src={urlImageProfile} alt="Imagem de perfil"/>
                         </Avatar.Root>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
@@ -125,7 +128,7 @@ function NavBar() {
                 <Tooltip.Root>
                     <div className='absolute bottom-[80px] w-[80%] h-[3px] bg-terciary mt-[20px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] w-full flex justify-center`}>
-                            <button className="IconButton" onClick={() => (context.setModalGlobal(true), setModal({message:"Tem certeza que deseja sair da sua conta?", type:"error", size:"big"}))} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
+                            <button className="IconButton" onClick={() => (context.setModalGlobal(true), setModal({status:true,  message:"Tem certeza que deseja sair da sua conta?", type:"error", size:"big"}))} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
