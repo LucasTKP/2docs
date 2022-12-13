@@ -1,4 +1,3 @@
-
 function ErrorFirebase(props) {
     const errors = props
     console.log(errors.code)
