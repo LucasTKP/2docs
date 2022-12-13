@@ -8,6 +8,7 @@ import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth, db} from '../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
+import ErrorFirebase from '../ErrorFirebase'
 
 function Signin(){
   const context = useContext(AppContext)
@@ -41,7 +42,6 @@ function Signin(){
       .then((userCredential) => {
         context.setLoading(false)
         const user = userCredential.user;
-        console.log(user)
       })
       .catch((error) => {
         context.setLoading(false)
@@ -51,7 +51,7 @@ function Signin(){
   }
 
   function AlterPassword(email){
-    if(dataUser.cnpj === ""){
+    if(dataUser.email === ""){
       return (
         context.setModalGlobal(true),
         setModal({message: "Preencha o campo de email.", type:"error", size:"little"})
@@ -106,7 +106,7 @@ function Signin(){
       <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
           <p className="text-[40px] font-poiretOne">Login</p>
-          <p onClick={() => SearchCnpj()} className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
+          <p className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
           <Tabs.List className="w-full mt-[20px] border-b-2 border-black flex justify-between" aria-label="Manage your account">
             <Tabs.Trigger id={styles.tabsTrigger1} className={`text-[22px] w-[50%] rounded-tl-[8px] py-[5px]}`}value="tab1">
               Email
