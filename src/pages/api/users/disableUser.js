@@ -7,8 +7,8 @@ export default async function disableUser(req, res) {
       try {
         for(var i = 0; i < req.body.users.length; i++){
           const response = await getAuth()
-          .updateUser(req.body.users[i].idUser, {
-              disabled: !req.body.users[i].option
+          .updateUser(req.body.users[i].id, {
+              disabled: !req.body.users[i].status
           })
         }
         return res.json({type: "success"})

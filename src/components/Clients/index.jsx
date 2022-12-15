@@ -19,7 +19,7 @@ import ErrorFirebase from '../ErrorFirebase';
 function ComponentClients(){
   const context = useContext(AppContext)
   const [users, setUsers] = useState([])
-  const [usersFilter, setUsersFilter] = useState({})
+  const [usersFilter, setUsersFilter] = useState([])
   const [filter, setFilter] = useState({name: false, date:false, status:false})
   const [searchUser, setSearchUser] = useState("")
   const [userEdit, setUserEdit] = useState()
@@ -43,7 +43,9 @@ function ComponentClients(){
           querySnapshot.forEach((doc) => {
             getUsers.push(doc.data())
           });
-
+    for(var i = 0; i < getUsers.length; i++){
+      getUsers[i].checked = false
+    }
     setPages(Math.ceil(getUsers.length / 10))
     setUsers(getUsers)
     setUsersFilter(getUsers)
@@ -198,26 +200,11 @@ function ComponentClients(){
     }
   },[searchUser])
 
-    // <--------------------------------- Select User --------------------------------->
-
-  async function SelectUsers(user){
-      var index =  selectUsers.findIndex(element => element.id === user.id);
-      if(index > -1){
-        selectUsers.splice(index, 1);
-      } else {
-        selectUsers.push({id:user.id, image:user.nameImage, option:user.status, name:user.name })
-      }
-      if(selectUsers.length > 0){
-        setDelet(true)
-      } else {
-        setDelet(false)
-      }
-  }
 
    // <--------------------------------- Delete User --------------------------------->
   function ConfirmationDeleteUser(){
     context.setModalGlobal(true)
-    if(delet){
+    if(selectUsers.length > 0){
       if(selectUsers.length === 1){
         setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuário", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", type:"error", size:"big", user: selectUsers[0].name})
       } else {
@@ -227,26 +214,19 @@ function ComponentClients(){
       context.setModalGlobal(true)
       setModal({...modal, message: "Selecione um usuário para deletar.", type: "error", size:"little"})
     }
-    
   }
 
   useEffect(() => {
     if(context.actionCancel === true && modal.status === true){
       DeleteAuth()
+      context.setActionCancel(false)
     }
 },[context.actionCancel])
 
   async function DeleteAuth(){
-    context.setActionCancel(false)
     const domain = new URL(window.location.href).origin
-    const idUsers = []
-    for(let i = 0; i < selectUsers.length; i++){
-      idUsers.push(selectUsers[i].id)
-    }
-    
       context.setLoading(true)
-      const result = await axios.post(`${domain}/api/users/deleteUser`, {users: idUsers, uid: auth.currentUser.uid})
-
+      const result = await axios.post(`${domain}/api/users/deleteUser`, {users: selectUsers, uid: auth.currentUser.uid})
       if(result.data.type === 'success'){
         DeletePhoto()
       } else {
@@ -258,8 +238,8 @@ function ComponentClients(){
   async function DeletePhoto(){
       try{
         for(let i = 0; i < selectUsers.length; i++){
-          if(selectUsers[i].image != "padrao.png"){
-            const desertRef = ref(storage, 'images/' + selectUsers[i].image);
+          if(selectUsers[i].nameImage != "padrao.png"){
+            const desertRef = ref(storage, 'images/' + selectUsers[i].nameImage);
             const result = await deleteObject(desertRef )
           }
         }
@@ -290,47 +270,57 @@ function ComponentClients(){
       setModal({...modal, message: "", type:"", size:""})
     }
   }, [context.modalGlobal]);
-
   // <--------------------------------- Disable User --------------------------------->
 
   async function DisableUser(){
-    context.setLoading(true)
     const users = []
     const domain = new URL(window.location.href).origin
-    const idUsers = []
-    for(let i = 0; i < selectUsers.length; i++){
-      idUsers.push({idUser:selectUsers[i].id, option: selectUsers[i].option})
-    }
 
-    if(delet){
-      const result = await axios.post(`${domain}/api/users/disableUser`, {users: idUsers, uid: auth.currentUser.uid})
+    for(let i = 0; i < usersFilter.length; i++){
+      users.push(usersFilter[i])
+    }
+    if(selectUsers.length > 0){
+      const result = await axios.post(`${domain}/api/users/disableUser`, {users: selectUsers, uid: auth.currentUser.uid})
       if(result.data.type === 'success'){
-        setMenu(!menu)
-        for (let i = 0; i < idUsers.length; i++){
-          await updateDoc(doc(db, 'users', idUsers[i].idUser), {
-            status: !idUsers[i].option,
+        for (let i = 0; i < selectUsers.length; i++){
+          await updateDoc(doc(db, 'users', selectUsers[i].id), {
+            status: !selectUsers[i].status,
           })
+          const index = users.findIndex( element => element.id === selectUsers[i].id)
+          users[index].status = !users[index].status
+          users[index].checked = false
         }
-                  for(let i = 0; i < usersFilter.length; i++){
-            users.push(usersFilter[i])
-          }
-          for(let i = 0; i < selectUsers.length; i++){
-            const index = users.findIndex(user => user.id === selectUsers[i].id)
-            users[index].status =  !users[index].status
-          } 
-          setSelectUsers([])
-          setUsersFilter(users)
-          context.setLoading(false)
+        setSelectUsers([])
+        setMenu(true)
+        setUsersFilter(users)
       } else {
         context.setModalGlobal(true)
         setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
       }
+
     } else {
       context.setModalGlobal(true)
-      setModal({...modal, message: "Selecione um usuário para deletar.", type: "error", size:"little"})
+      setModal({...modal, message: "Nenhum usuário foi selecionado", type: "error", size:"little"})
     }
   }
-  
+
+  // <--------------------------------- Select User --------------------------------->
+
+  async function SelectUsers(index){
+    const users = []
+    const select = []
+    for (var i = 0; i < usersFilter.length; i++) {
+      users.push(usersFilter[i])
+    }
+    users[index].checked = !users[index].checked
+    for(let i = 0; i < users.length; i++){
+      if(users[i].checked === true){
+        select.push(users[i])
+      }
+    }
+    setSelectUsers(select)
+    setUsersFilter(users)
+  }
 
 
 return (
@@ -350,8 +340,8 @@ return (
                     <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                     <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button  onClick={() => DisableUser()} className={` border-[2px] ${selectUsers.length == 0 ? "bg-hilight border-terciary text-terciary" : "bg-blue/40 border-blue text-white"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
-                <button  onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length == 0 ? "bg-hilight border-terciary text-terciary" : "bg-red/40 border-red text-white"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
+                <button  onClick={() => DisableUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-terciary"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
+                <button  onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-terciary"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 <button onClick={() => context.setCreateUserModal(true)} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
             </div>
@@ -394,18 +384,13 @@ return (
                     {/* <--------------------------------- BodyTable ---------------------------------> */}
                 <tbody>
                 {usersFilter.map((user, index) =>{
-                  var checked 
-                  for(let i=0; i < selectUsers.length; i++){
-                    if(selectUsers[i].id === user.id){
-                      checked = true
-                    }
-                  }
+                  var checked = user.checked
 
                   if( showItens.min < index && index < showItens.max){
                 return(
                 <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
                     <th className='h-[50px] max-sm:h-[40px]'>
-                      <input type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(user)} className='w-[20px] h-[20px] ml-[5px]'/>
+                      <input type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px] ml-[5px]'/>
                       </th>
                     <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
                       <Image src={user.image} width={40} height={40} alt="Perfil"  className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
