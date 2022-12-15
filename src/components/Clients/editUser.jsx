@@ -36,7 +36,8 @@ function EditUser(props){
     if(fileDataURL != user.image){
       const referencesFile = Math.floor(Math.random() * 65536) + file.name;
       if(file.name != "padrao.png"){
-        deletePhoto()
+
+        DeletePhoto()
         const storageRef = ref(storage, "images/" + referencesFile);
         uploadBytes(storageRef, file)
         .then((snapshot) => {
@@ -67,7 +68,8 @@ function EditUser(props){
     }
   }
 
-  function deletePhoto(){
+
+  function DeletePhoto(){
     if(user.nameImage != "padrao.png"){
       const desertRef = ref(storage, 'images/' + user.nameImage);
       deleteObject(desertRef).then((result) => {
@@ -158,7 +160,7 @@ function EditUser(props){
 return (
       <>
       {context.editUserModal ? 
-        <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen absolute max-sm:pb-[10px] right-0 flex flex-col items-center'>
+        <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen absolute pb-[100px] right-0 flex flex-col items-center max-sm:z-10'>
           <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full '>
             <DoubleArrowRightIcon onClick={() => context.setEditUserModal(false)} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px]  max-sm:h-[35px] absolute left-[5px]'/>
             <p  className='font-poiretOne text-[40px] max-sm:text-[35px] flex'>Editar</p>
@@ -225,4 +227,6 @@ return (
   )
   }
 
+
 export default EditUser;
+

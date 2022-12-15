@@ -113,7 +113,6 @@ function ComponentClients(){
     } else {
         namesStatus.push(true)
         namesStatus.push(false)
-        console.log(namesStatus)
        namesStatus.forEach(elelement =>{
           for (var i = 0; i < usersHere.length; i++) {
             if(elelement === usersHere[i].status){
@@ -165,20 +164,26 @@ function ComponentClients(){
   }
 
   function formatDate(date){
-    var month
-    if (date.substr(4, 3) === "Jan") month = "Janeiro"
-    else if (date.substr(4, 3) === "Feb") month = "Fevereiro"
-    else if (date.substr(4, 3) === "Mar") month = "Março"
-    else if (date.substr(4, 3) === "Apr") month = "Abril"
-    else if (date.substr(4, 3) === "May") month = "Maio"
-    else if (date.substr(4, 3) === "Jun") month = "Junho"
-    else if (date.substr(4, 3) === "Jul") month = "Julho"
-    else if (date.substr(4, 3) === "Aug") month = "Augusto"
-    else if (date.substr(4, 3) === "Sep") month = "Setembro"
-    else if (date.substr(4, 3) === "Oct") month = "Outubro"
-    else if (date.substr(4, 3) === "Nov") month = "Novembro"
-    else if (date.substr(4, 3) === "Dec") month = "Dezembro"
-    return date.substr(8, 2) + " de " + month + " de " + date.substr(11, 4)
+    if(window.screen.width > 1250){
+      var month
+      if (date.substr(4, 3) === "Jan") month = "Janeiro"
+      else if (date.substr(4, 3) === "Feb") month = "Fevereiro"
+      else if (date.substr(4, 3) === "Mar") month = "Março"
+      else if (date.substr(4, 3) === "Apr") month = "Abril"
+      else if (date.substr(4, 3) === "May") month = "Maio"
+      else if (date.substr(4, 3) === "Jun") month = "Junho"
+      else if (date.substr(4, 3) === "Jul") month = "Julho"
+      else if (date.substr(4, 3) === "Aug") month = "Augusto"
+      else if (date.substr(4, 3) === "Sep") month = "Setembro"
+      else if (date.substr(4, 3) === "Oct") month = "Outubro"
+      else if (date.substr(4, 3) === "Nov") month = "Novembro"
+      else if (date.substr(4, 3) === "Dec") month = "Dezembro"
+      return date.substr(8, 2) + " de " + month + " de " + date.substr(11, 4)
+    } else {
+      var newDate = new Date(date)
+      return newDate.toLocaleDateString()
+    }
+
   }
 
   useEffect(() => {
@@ -212,10 +217,15 @@ function ComponentClients(){
    // <--------------------------------- Delete User --------------------------------->
   function ConfirmationDeleteUser(){
     context.setModalGlobal(true)
-    if(selectUsers.length === 1){
-      setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuario", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", type:"error", size:"big", user: selectUsers[0].name})
+    if(delet){
+      if(selectUsers.length === 1){
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuário", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", type:"error", size:"big", user: selectUsers[0].name})
+      } else {
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes usuários", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", type:"error", size:"big", user:null})
+      }
     } else {
-      setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes ususários", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", type:"error", size:"big", user:null})
+      context.setModalGlobal(true)
+      setModal({...modal, message: "Selecione um usuário para deletar.", type: "error", size:"little"})
     }
     
   }
@@ -233,7 +243,7 @@ function ComponentClients(){
     for(let i = 0; i < selectUsers.length; i++){
       idUsers.push(selectUsers[i].id)
     }
-    if(delet){
+    
       context.setLoading(true)
       const result = await axios.post(`${domain}/api/users/deleteUser`, {users: idUsers, uid: auth.currentUser.uid})
 
@@ -243,10 +253,6 @@ function ComponentClients(){
         context.setModalGlobal(true)
         setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
       }
-    } else {
-      context.setModalGlobal(true)
-      setModal({...modal, message: "Selecione um usuário para deletar.", type: "error", size:"little"})
-    }
   }
 
   async function DeletePhoto(){
@@ -264,10 +270,19 @@ function ComponentClients(){
   }
 
   async function DeleteFile(){
+    const users = usersFilter
     for(let i = 0; i < selectUsers.length; i++){
       const result = await deleteDoc(doc(db, "users", selectUsers[i].id));
     }
-    window.location.reload(true)
+
+    for(let i = 0; i < selectUsers.length; i++){
+      const index = users.findIndex(user => user.id === selectUsers[i].id)
+      users.splice(index, 1);
+    } 
+    setSelectUsers([])
+    setMenu(!menu)
+    setUsersFilter(users);
+    context.setLoading(false)
   }
 
   useEffect(() => {
@@ -279,6 +294,8 @@ function ComponentClients(){
   // <--------------------------------- Disable User --------------------------------->
 
   async function DisableUser(){
+    context.setLoading(true)
+    const users = []
     const domain = new URL(window.location.href).origin
     const idUsers = []
     for(let i = 0; i < selectUsers.length; i++){
@@ -286,15 +303,24 @@ function ComponentClients(){
     }
 
     if(delet){
-      context.setLoading(true)
       const result = await axios.post(`${domain}/api/users/disableUser`, {users: idUsers, uid: auth.currentUser.uid})
       if(result.data.type === 'success'){
+        setMenu(!menu)
         for (let i = 0; i < idUsers.length; i++){
           await updateDoc(doc(db, 'users', idUsers[i].idUser), {
             status: !idUsers[i].option,
           })
-          window.location.reload();
         }
+                  for(let i = 0; i < usersFilter.length; i++){
+            users.push(usersFilter[i])
+          }
+          for(let i = 0; i < selectUsers.length; i++){
+            const index = users.findIndex(user => user.id === selectUsers[i].id)
+            users[index].status =  !users[index].status
+          } 
+          setSelectUsers([])
+          setUsersFilter(users)
+          context.setLoading(false)
       } else {
         context.setModalGlobal(true)
         setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
@@ -304,13 +330,13 @@ function ComponentClients(){
       setModal({...modal, message: "Selecione um usuário para deletar.", type: "error", size:"little"})
     }
   }
+  
 
-  // <--------------------------------- Pages table --------------------------------->
 
 return (
-      <section className="bg-primary w-full h-full min-h-screen  flex flex-col items-center text-black">
-        <div className='w-[80%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
-          <p  className=' font-poiretOne text-[40px]'>Clientes</p>
+      <section className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
+        <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
+          <p className=' font-poiretOne text-[40px]'>Clientes</p>
           <div className=' w-full relative border-[2px] border-terciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
               <div className='flex items-center'>
@@ -348,7 +374,7 @@ return (
 
                     <th className='font-[400] max-lg:hidden'>
                       <button onClick={() => (setFilter({...filter, date:! filter.date, status: false, name:false}) ,filterDate())} className='flex items-center cursor-pointer'>
-                        <p>Data de cadastro</p>
+                        <p className='text-left'>Data de cadastro</p>
                         <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
                       </button>
                     </th>
@@ -368,27 +394,39 @@ return (
                     {/* <--------------------------------- BodyTable ---------------------------------> */}
                 <tbody>
                 {usersFilter.map((user, index) =>{
+                  var checked 
+                  for(let i=0; i < selectUsers.length; i++){
+                    if(selectUsers[i].id === user.id){
+                      checked = true
+                    }
+                  }
+
                   if( showItens.min < index && index < showItens.max){
                 return(
                 <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
-                    <th className='py-[10px]'><input type="checkbox"  onClick={() => SelectUsers(user)} className='w-[20px] h-[20px] ml-[5px]'/></th>
-                    <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center max-md:mt-[7px]'>
+                    <th className='h-[50px] max-sm:h-[40px]'>
+                      <input type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(user)} className='w-[20px] h-[20px] ml-[5px]'/>
+                      </th>
+                    <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
                       <Image src={user.image} width={40} height={40} alt="Perfil"  className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
-                      <p>{user.name}</p>
+                      <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{user.name}</p>
                     </th>
-                    <th className='font-[400] text-left pl-[20px] max-md:hidden'>{user.email}</th>
-                    <th className='font-[400] max-lg:hidden'>{formatDate(user.date)}</th>
+                    <th className='font-[400] text-left pl-[20px] max-md:hidden'>
+                      <p className='overflow-hidden whitespace-nowrap text-ellipsis max-w-[250px]'>{user.email}</p>
+                    </th>
+                    <th className='font-[400] max-lg:hidden text-left'>{formatDate(user.date)}</th>
                     <th className='font-[400] w-[80px] max-lg:w-[70px]'>
                       {user.status  ? 
                         <div className='bg-red/30 border-red text-red border-[1px] rounded-full'>
                           Inativo
-                        </div>:
+                        </div>
+                        :
                         <div className='bg-greenV/30 border-greenV text-greenV border-[1px] rounded-full'>
                           Ativo 
                         </div>
                       }
                     </th>
-                    <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px] py-[8px]'>
+                    <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                       <div className='flex justify-between'>
                         <button onClick={() => (setUserEdit(user), context.setEditUserModal(true))} className='cursor-pointer bg-terciary p-[4px] flex justify-center items-center rounded-[8px]'>
                           <Pencil1Icon width={25} height={25}/>
@@ -405,20 +443,22 @@ return (
 
               : 
                 <div className='w-full h-full flex justify-center items-center flex-col'>
-                  <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowSignUp(true)}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
+                  <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => context.setCreateUserModal(true)}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
                   <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
                 </div>
                 }
 
 
             {/* <--------------------------------- NavBar table ---------------------------------> */}
+            {usersFilter.length > 0 ?
             <div className='w-full px-[10px] flex justify-between h-[50px] mt-[10px]'>
-              <div className='flex justify-between w-full h-[40px]'>
+              <div className='flex justify-between w-full h-[40px] max-sm:h-[30px]'>
                 <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
                 <p>{`Página ${showItens.max / 10} de ${pages}`}</p>
                 <button onClick={() => {showItens.max / 10 != pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == pages ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
               </div>
             </div>
+            :<></>}
           </div>
         </div>
         {context.createUserModal ? <CreateUser /> : <></>}
