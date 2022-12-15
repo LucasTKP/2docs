@@ -280,6 +280,7 @@ function ComponentClients(){
       users.push(usersFilter[i])
     }
     if(selectUsers.length > 0){
+      context.setLoading(true)
       const result = await axios.post(`${domain}/api/users/disableUser`, {users: selectUsers, uid: auth.currentUser.uid})
       if(result.data.type === 'success'){
         for (let i = 0; i < selectUsers.length; i++){
@@ -290,6 +291,7 @@ function ComponentClients(){
           users[index].status = !users[index].status
           users[index].checked = false
         }
+        context.setLoading(false)
         setSelectUsers([])
         setMenu(true)
         setUsersFilter(users)
