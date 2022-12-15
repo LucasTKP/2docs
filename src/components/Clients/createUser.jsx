@@ -15,7 +15,6 @@ import axios from 'axios';
 function ComponentClients(){
   const imageMimeType = /image\/(png|jpg|jpeg)/i;
   const context = useContext(AppContext)
-  const [windowSignUp, setWindowSignUp] = useState(false)
   const [dataUser, setDataUser] = useState({id:"", name: "", email:"", cnpj: "", phone:"", password:"", company:""})
   const [file, setFile] = useState({name: "padrao.png"})
   const [modal, setModal] = useState({message: "", type:"", size:""})
@@ -52,20 +51,6 @@ function ComponentClients(){
       });
     }
   }
-
-  useEffect(() => {
-    if(windowSignUp === true){
-      var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ.";
-      var passwordLength = 12;
-      var password = "";
-  
-      for (var i = 0; i < passwordLength; i++) {
-        var randomNumber = Math.floor(Math.random() * chars.length);
-        password += chars.substring(randomNumber, randomNumber + 1);
-      }
-      setDataUser({...dataUser, password:password})
-    }
-  },[windowSignUp])
   
   async function SignUpDb(image){
     var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
@@ -108,6 +93,7 @@ function ComponentClients(){
       const id = result.data.uid
       UploadPhoto(id)
     } else {
+      console.log("a")
       context.setModalGlobal(true)
       context.setLoading(false)
       setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
@@ -169,21 +155,14 @@ function ComponentClients(){
   }, [context.modalGlobal]);
 
   useEffect(() => {
-    var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ.";
-    var passwordLength = 12;
-    var password = "";
-    for (var i = 0; i < passwordLength; i++) {
-      var randomNumber = Math.floor(Math.random() * chars.length);
-      password += chars.substring(randomNumber, randomNumber + 1);
-    }
-    setDataUser({...dataUser, password:password})
-},[])
+    setDataUser({...dataUser, password: dataUser.name.substr(0, 5) + Math.floor(Math.random() * 100000)})
+},[dataUser.name])
 
 
 return (
     <>
         {context.createUserModal ? 
-        <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen absolute max-sm:pb-[10px] right-0 flex flex-col items-center'>
+        <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen pb-[100px] absolute right-0 flex flex-col items-center max-sm:z-10'>
           <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full '>
             <DoubleArrowRightIcon onClick={() => context.setCreateUserModal(false)} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px]  max-sm:h-[35px] absolute left-[5px]'/>
             <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex'>Cadastrar</p>
@@ -218,13 +197,13 @@ return (
 
               <label className='flex flex-col'>
                 Telefone
-                <input required  value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o telefone'/>
+                <input maxLength={15} required  value={phoneMask(dataUser.phone)} onChange={(Text) => setDataUser({...dataUser, phone:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o telefone'/>
               </label>
             </div>
 
             <div className='flex max-sm:flex-col justify-between gap-[5px]'>
               <label className='flex flex-col '>
-                Senha
+                Senha Provisória
                 {eye ?
                   <div className='border-2 border-black rounded-[8px] flex items-center'>
                     <input required type="text" value={dataUser.password} minLength={8} onChange={(Text) => setDataUser({...dataUser, password:Text.target.value})} className='outline-none w-full text-[18px] p-[5px] bg-transparent' placeholder='Senha provisória'/>

@@ -10,7 +10,7 @@ import AppContext from '../../components/AppContext'
 import { usePathname } from 'next/navigation'
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { db, auth } from '../../../firebase'
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, doc, updateDoc, where, getDocs } from "firebase/firestore";
 import axios from 'axios';
 
 function NavBar() {
@@ -48,11 +48,15 @@ function NavBar() {
         }
       }, [context.modalGlobal]);
 
-      async function setAdminAuth(){
-        const domain = new URL(window.location.href).origin
-        const result = await axios.post(`${domain}/api/users/setAdmin`, {user: "fuQZiLm4Xta8O28db6P7bmir5Ee2"})
-        console.log(result)
-      }
+    async function setAdminAuth(){
+    const id = "BSpONHzk8kPfOzvGQuZ9ov6GJuH3"
+    const domain = new URL(window.location.href).origin
+    const result = await axios.post(`${domain}/api/users/setAdmin`, {user: id})
+    await updateDoc(doc(db, 'users', id), {
+        admin:true
+        })
+        window.location.reload();
+    }
 
   return (
     <div className='fixed left-[0px] z-10'>
@@ -128,7 +132,7 @@ function NavBar() {
                 <Tooltip.Root>
                     <div className='absolute bottom-[80px] w-[80%] h-[3px] bg-terciary mt-[20px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] w-full flex justify-center`}>
-                            <button className="IconButton" onClick={() => (context.setModalGlobal(true), setModal({status:true,  message:"Tem certeza que deseja sair da sua conta?", type:"error", size:"big"}))} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
+                            <button className="IconButton" onClick={() => (context.setModalGlobal(true), setModal({status:true,  message:"Tem certeza que deseja sair da sua conta", type:"error", size:"big"}))} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
