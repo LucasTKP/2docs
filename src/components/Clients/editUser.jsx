@@ -36,6 +36,7 @@ function EditUser(props){
     if(fileDataURL != user.image){
       const referencesFile = Math.floor(Math.random() * 65536) + file.name;
       if(file.name != "padrao.png"){
+
         DeletePhoto()
         const storageRef = ref(storage, "images/" + referencesFile);
         uploadBytes(storageRef, file)
@@ -66,6 +67,7 @@ function EditUser(props){
       UpdateBdUser({imageName: user.nameImage, urlImage: user.image})
     }
   }
+
 
   function DeletePhoto(){
     if(user.nameImage != "padrao.png"){
@@ -225,4 +227,6 @@ return (
   )
   }
 
+
 export default EditUser;
+
