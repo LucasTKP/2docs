@@ -48,8 +48,16 @@ function EditUser(props, {childToParentEdit, closedWindow}){
     context.setLoading(true)
     if(dataUser.email != user.email){
       const result = await axios.post(`${domain}/api/users/updateUser`, {userId: user.id, data:{email: dataUser.email}, uid: auth.currentUser.uid})
+      if(result.data.uid){
+        UpdatePhoto()
+      } else {
+        context.setModalGlobal(true)
+        context.setLoading(false)
+        setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
+      }
+    } else {
+      UpdatePhoto()
     }
-    UpdatePhoto()
   }
 
   function UpdatePhoto(){
