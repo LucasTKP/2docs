@@ -213,7 +213,7 @@ return (
           <div className='flex max-sm:flex-col justify-between gap-[5px] '>
             <label className='flex flex-col'>
               CNPJ
-              <InputMask  required  mask="99.999.999/9999-99" onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o cnpj'/>
+              <InputMask  required  mask="99.999.999/9999-99" value={dataUser.cnpj} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o cnpj'/>
             </label>
 
             <label className='flex flex-col'>
