@@ -46,6 +46,8 @@ function EditUser(props, {childToParentEdit, closedWindow}){
 
   async function UpdateDataUser() {
     context.setLoading(true)
+    console.log(dataUser.email)
+    console.log(user.email)
     if(dataUser.email != user.email){
       const result = await axios.post(`${domain}/api/users/updateUser`, {userId: user.id, data:{email: dataUser.email}, uid: auth.currentUser.uid})
       if(result.data.uid){
@@ -64,6 +66,7 @@ function EditUser(props, {childToParentEdit, closedWindow}){
     if(fileDataURL != user.image){
       const referencesFile = Math.floor(Math.random() * 65536) + file.name;
       if(file.name != "padrao.png"){
+
         DeletePhoto()
         const storageRef = ref(storage, "images/" + referencesFile);
         uploadBytes(storageRef, file)
@@ -94,6 +97,7 @@ function EditUser(props, {childToParentEdit, closedWindow}){
       UpdateBdUser({imageName: user.nameImage, urlImage: user.image})
     }
   }
+
 
   function DeletePhoto(){
     if(user.nameImage != "padrao.png"){
@@ -252,4 +256,6 @@ return (
   )
   }
 
+
 export default EditUser;
+
