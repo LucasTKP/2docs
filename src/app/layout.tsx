@@ -7,6 +7,7 @@ import AppContext from '../components/AppContext'
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from '../../firebase'
 import Loading from '../components/Loading'
+import { useRouter } from 'next/navigation';
 
 const poiretOne = Poiret_One({
   display: 'swap',
@@ -29,23 +30,24 @@ export default function RootLayout({
 const [modalGlobal, setModalGlobal] = useState(false)
 const [actionCancel, setActionCancel] = useState(false)
 const [loading, setLoading] = useState(false)
-const [editUserModal, setEditUserModal] = useState(false)
-const [createUserModal, setCreateUserModal] = useState(false)
+const router =  useRouter()
 
 useEffect(() => {
   const page = window.location.pathname
   onAuthStateChanged(auth, (user) => {
     if (user) {
       if(page === "/"){
-        window.location.href = "/Admin"
+        router.push("/Admin")
+        const uid = user.uid;
       }
     } else {
       if(page != "/"){
-        window.location.href = "/"
+        router.push("/")
       }
     }
   });
 },[children])
+
 
   return (
     <html>
@@ -54,9 +56,7 @@ useEffect(() => {
       <AppContext.Provider value={{
         modalGlobal, setModalGlobal, 
         actionCancel, setActionCancel, 
-        loading, setLoading,
-        editUserModal, setEditUserModal,
-        createUserModal, setCreateUserModal
+        loading, setLoading
         }}>
           <Loading />
           {children}

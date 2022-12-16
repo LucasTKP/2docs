@@ -9,12 +9,14 @@ import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/aut
 import { auth, db} from '../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import ErrorFirebase from '../ErrorFirebase'
+import { useRouter } from 'next/navigation';
 
 function Signin(){
   const context = useContext(AppContext)
   const [dataUser, setDataUser] = useState({email: "", password: "", cnpj:"", checked: false})
   const [eye, setEye] = useState(false)
   const [modal, setModal] = useState({message: "", type: "error"})
+  const router = useRouter()
 
   function SignInEmail(e){
     e.preventDefault()
@@ -41,7 +43,7 @@ function Signin(){
     signInWithEmailAndPassword(auth, email, dataUser.password)
       .then((userCredential) => {
         context.setLoading(false)
-        const user = userCredential.user;
+        router.push("/Admin")
       })
       .catch((error) => {
         context.setLoading(false)

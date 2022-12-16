@@ -5,16 +5,17 @@ import iconNullClient from '../../../public/icons/nullClient.svg'
 import iconSearchUser from '../../../public/icons/searchUser.svg'
 import React, {useState, useContext, useEffect} from 'react'
 import AppContext from '../AppContext';
-import {db, auth, storage } from '../../../firebase'
-import { collection, where, getDocs, doc, deleteDoc, updateDoc, query } from "firebase/firestore";  
+import {db, auth} from '../../../firebase'
+import { collection, where, getDocs, doc, updateDoc, query } from "firebase/firestore";  
 import { Pencil1Icon, FileTextIcon } from '@radix-ui/react-icons';
-import { ref, deleteObject } from "firebase/storage";
 import ArrowFilter from '../../../public/icons/arrowFilter.svg'
 import EditUser from './editUser'
 import CreateUser from './createUser'
+import DeletUser from './deletUser'
 import Modals from '../Modals'
 import axios from 'axios';
 import ErrorFirebase from '../ErrorFirebase';
+
 
 function ComponentClients(){
   const context = useContext(AppContext)
@@ -24,9 +25,9 @@ function ComponentClients(){
   const [searchUser, setSearchUser] = useState("")
   const [userEdit, setUserEdit] = useState()
   const [selectUsers, setSelectUsers] = useState([])
-  const [delet, setDelet] = useState(false)
   const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: "",  type:"", size:"", user:"" })
   const [showItens, setShowItens] = useState({min:-1, max:10})
+  const [windowsAction, setWindowsAction] = useState({createUser: false, updateUser: false, deletUser: false})
   const [pages, setPages] = useState(0)
   const [menu, setMenu] = useState(true)
   // <--------------------------------- GetUser --------------------------------->
@@ -36,7 +37,6 @@ function ComponentClients(){
   },[])
 
   async function GetUsers(){
-    context.setLoading(true)
     const getUsers = []
          const q = query(collection(db, "users"), where("admin", "!=", true));
           const querySnapshot = await getDocs(q);
@@ -200,9 +200,8 @@ function ComponentClients(){
     }
   },[searchUser])
 
-
    // <--------------------------------- Delete User --------------------------------->
-  function ConfirmationDeleteUser(){
+   function ConfirmationDeleteUser(){
     context.setModalGlobal(true)
     if(selectUsers.length > 0){
       if(selectUsers.length === 1){
@@ -216,70 +215,39 @@ function ComponentClients(){
     }
   }
 
-  useEffect(() => {
-    if(context.actionCancel === true && modal.status === true){
-      DeleteAuth()
+  const childModal = (childdata) => {
+    if(childdata === "Delete"){
+      context.setLoading()
       context.setActionCancel(false)
+      DeletUser({childToParentDelet, selectUsers, usersFilter})
     }
-},[context.actionCancel])
+  }
 
-  async function DeleteAuth(){
-    const domain = new URL(window.location.href).origin
-      context.setLoading(true)
-      const result = await axios.post(`${domain}/api/users/deleteUser`, {users: selectUsers, uid: auth.currentUser.uid})
-      if(result.data.type === 'success'){
-        DeletePhoto()
-      } else {
+    const childToParentDelet = (childdata) => {
+      if(childdata.data){
         context.setModalGlobal(true)
-        setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
+        setModal({...modal, message: ErrorFirebase(childdata.data), type: "error", size:"little"})
+      } else {
+        setMenu(true)
+        setSelectUsers([])
+        setUsers(childdata)
+        setPages(Math.ceil(childdata.length / 10))
+        setWindowsAction({...windowsAction, createUser: false, updateUser: false})
+        setUsersFilter(childdata) 
+        context.setLoading(false)
       }
-  }
-
-  async function DeletePhoto(){
-      try{
-        for(let i = 0; i < selectUsers.length; i++){
-          if(selectUsers[i].nameImage != "padrao.png"){
-            const desertRef = ref(storage, 'images/' + selectUsers[i].nameImage);
-            const result = await deleteObject(desertRef )
-          }
-        }
-        DeleteFile()
-      } catch(e){
-        console.log(e)
-      }
-  }
-
-  async function DeleteFile(){
-    const users = usersFilter
-    for(let i = 0; i < selectUsers.length; i++){
-      const result = await deleteDoc(doc(db, "users", selectUsers[i].id));
     }
-
-    for(let i = 0; i < selectUsers.length; i++){
-      const index = users.findIndex(user => user.id === selectUsers[i].id)
-      users.splice(index, 1);
-    } 
-    setSelectUsers([])
-    setMenu(!menu)
-    setUsersFilter(users);
-    context.setLoading(false)
-  }
-
-  useEffect(() => {
-    if(context.modalGlobal === false){
-      setModal({...modal, message: "", type:"", size:""})
-    }
-  }, [context.modalGlobal]);
   // <--------------------------------- Disable User --------------------------------->
 
   async function DisableUser(){
     const users = []
     const domain = new URL(window.location.href).origin
-
     for(let i = 0; i < usersFilter.length; i++){
       users.push(usersFilter[i])
     }
+
     if(selectUsers.length > 0){
+      context.setLoading(true)
       const result = await axios.post(`${domain}/api/users/disableUser`, {users: selectUsers, uid: auth.currentUser.uid})
       if(result.data.type === 'success'){
         for (let i = 0; i < selectUsers.length; i++){
@@ -292,12 +260,14 @@ function ComponentClients(){
         }
         setSelectUsers([])
         setMenu(true)
+        setUsers(users)
         setUsersFilter(users)
+        context.setLoading(false)
       } else {
         context.setModalGlobal(true)
+        context.setLoading(false)
         setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
       }
-
     } else {
       context.setModalGlobal(true)
       setModal({...modal, message: "Nenhum usuário foi selecionado", type: "error", size:"little"})
@@ -322,6 +292,51 @@ function ComponentClients(){
     setUsersFilter(users)
   }
 
+  // <--------------------------------- Create User --------------------------------->
+  const childToParentCreate = (childdata) => {
+    const users = []
+    for (var i = 0; i < usersFilter.length; i++) {
+      users.push(usersFilter[i])
+    }
+    users.push(childdata)
+    setUsersFilter(users)
+    setPages(Math.ceil(users.length / 10))
+    setWindowsAction({...windowsAction, createUser: false, updateUser: false})
+    setUsers(users)
+    context.setLoading(false)
+    
+  }
+
+  const closedWindow = () => {
+    setWindowsAction({...windowsAction, createUser: false, updateUser: false})
+  }
+
+  // <--------------------------------- Edit User --------------------------------->
+
+  const childToParentEdit = (childdata) => {
+    const users = []
+    users.push(childdata)
+    for (var i = 0; i < usersFilter.length; i++) {
+      if(usersFilter[i].id != childdata.id){
+        users.push(usersFilter[i])
+      }
+    }
+    setMenu(true)
+    setUsersFilter(users)
+    setSelectUsers([])
+    setUsers(users)
+    setWindowsAction({...windowsAction, createUser: false, updateUser: false})
+    context.setLoading(false)
+  }
+
+
+  useEffect(() => {
+    if(context.modalGlobal === false){
+      setModal({...modal, message: "", type:"", size:""})
+    }
+  }, [context.modalGlobal]);
+  
+
 
 return (
       <section className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
@@ -330,7 +345,7 @@ return (
           <div className=' w-full relative border-[2px] border-terciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
               <div className='flex items-center'>
-                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{users.length} <span className='text-secondary'>Clientes</span></p>
+                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{usersFilter.length} <span className='text-secondary'>Clientes</span></p>
                 <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px]"/>
                 <input type="text" value={searchUser} onChange={(Text) => setSearchUser(Text.target.value)}  className='w-[300px] text-terciary max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px]' placeholder='Buscar' ></input>
               </div>
@@ -340,9 +355,9 @@ return (
                     <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                     <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button  onClick={() => DisableUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-terciary"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
-                <button  onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-terciary"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
-                <button onClick={() => context.setCreateUserModal(true)} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
+                <button onClick={() => DisableUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-terciary"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
+                <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-terciary"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
+                <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
             </div>
             {usersFilter.length > 0 ?
@@ -413,7 +428,7 @@ return (
                     </th>
                     <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                       <div className='flex justify-between'>
-                        <button onClick={() => (setUserEdit(user), context.setEditUserModal(true))} className='cursor-pointer bg-terciary p-[4px] flex justify-center items-center rounded-[8px]'>
+                        <button onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer bg-terciary p-[4px] flex justify-center items-center rounded-[8px]'>
                           <Pencil1Icon width={25} height={25}/>
                         </button>
                         <div className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
@@ -425,14 +440,12 @@ return (
                 })}
                 </tbody>
               </table>
-
               : 
                 <div className='w-full h-full flex justify-center items-center flex-col'>
-                  <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => context.setCreateUserModal(true)}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
+                  <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({...windowsAction, createUser: true})}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
                   <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
                 </div>
                 }
-
 
             {/* <--------------------------------- NavBar table ---------------------------------> */}
             {usersFilter.length > 0 ?
@@ -446,9 +459,9 @@ return (
             :<></>}
           </div>
         </div>
-        {context.createUserModal ? <CreateUser /> : <></>}
-        {context.editUserModal ? <EditUser user={userEdit}/> : <></>}
-        <Modals message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} type={modal.type} size={modal.size} user={modal.user}/>
+        {windowsAction.createUser ? <CreateUser childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}
+        {windowsAction.updateUser ? <EditUser user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow}/> : <></>}
+        <Modals message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} type={modal.type} size={modal.size} user={modal.user} to={"Delete"} childModal={childModal}/>
       </section>
   )
   }
