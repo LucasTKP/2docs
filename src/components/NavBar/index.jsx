@@ -50,7 +50,7 @@ function NavBar(image) {
     }
 
   return (
-    <div className='left-[0px] z-10 max-h-screen h-screen'>
+    <div className='left-[0px] z-10 max-h-screen h-full'>
         <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
             <Tooltip.Root>
                 <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
