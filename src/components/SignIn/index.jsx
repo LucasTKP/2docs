@@ -99,7 +99,7 @@ function Signin(){
   }
 
     return (
-      <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">
+      <section className="bg-primary w-screen min-h- h-full flex flex-col justify-center items-center text-black">
         <Image src={Logo} alt="Logo da empresa" height={150} width={150} className='rounded-full'/>
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
   
@@ -119,7 +119,7 @@ function Signin(){
                 <label className="text-[18px]" htmlFor="Email">
                   Email
                 </label>
-                <input required type="email" value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="pl-[5px] text-[18px] bg-[#0000] border-[1px] border-black rounded-[8px] outline-none py-[10px]" placeholder='Digite seu email' />
+                <input required type="email" value={dataUser.email} name="Email" onChange={(Text) => setDataUser({...dataUser, email: Text.target.value})} className="w-full text-[18px] bg-[#0000] outline-none py-[10px] border-[1px] border-black rounded-[8px] pl-[5px]" placeholder='Digite seu email' />
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">
                 <label className="text-[18px]" htmlFor="username">
