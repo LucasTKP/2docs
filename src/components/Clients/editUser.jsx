@@ -57,6 +57,8 @@ function EditUser(props, {childToParentEdit, closedWindow}){
         context.setLoading(false)
         setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
       }
+    } else {
+      UpdatePhoto()
     }
   }
 

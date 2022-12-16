@@ -47,9 +47,7 @@ function CreateUser({childToParentCreate, closedWindow}){
       uploadBytes(storageRef, file)
       .then((snapshot) => {
         getDownloadURL(ref(storage, 'images/' + referencesFile))
-        .then((url) => {
-            SignUpDb({url: url, referencesFile: referencesFile, id: id})
-        })
+        .then((url) => { SignUpDb({url: url, referencesFile: referencesFile, id: id}) })
         .catch((error) => {
           context.setLoading(false)
           console.log(error)
@@ -64,10 +62,10 @@ function CreateUser({childToParentCreate, closedWindow}){
     } else {
       getDownloadURL(ref(storage, 'images/padrao.png'))
       .then((url) => {
-          SignUpDb({url: url, referencesFile: "padrao.png", id: id})
+        SignUpDb({url: url, referencesFile: "padrao.png", id: id})
       })
       .catch((error) => {
-          console.log(error)
+        console.log(error)
       });
     }
   }

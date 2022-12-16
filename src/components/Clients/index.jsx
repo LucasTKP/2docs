@@ -30,6 +30,8 @@ function ComponentClients(){
   const [windowsAction, setWindowsAction] = useState({createUser: false, updateUser: false, deletUser: false})
   const [pages, setPages] = useState(0)
   const [menu, setMenu] = useState(true)
+  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() =>{
       context.setLoading(true)
@@ -38,11 +40,11 @@ function ComponentClients(){
 
   async function GetUsers(){
     const getUsers = []
-         const q = query(collection(db, "users"), where("admin", "!=", true));
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            getUsers.push(doc.data())
-          });
+      const q = query(collection(db, "users"), where("admin", "!=", true));
+      const querySnapshot = await getDocs(q);
+      const a = querySnapshot.forEach((doc) => {
+        getUsers.push(doc.data())
+      });
     for(var i = 0; i < getUsers.length; i++){
       getUsers[i].checked = false
     }
@@ -52,137 +54,59 @@ function ComponentClients(){
     context.setLoading(false)
   }
 
+  // <--------------------------------- Filters Table --------------------------------->
+
   function filterName(){
-    const filterName = []
-    var namesUser = []
-    var usersHere
-    if (searchUser.length == 0){
-      usersHere = users
-    } else {
-      usersHere = usersFilter
-    }
-      for (var i = 0; i < usersHere.length; i++) {
-        namesUser.push({name:usersHere[i].name, email: usersHere[i].email})
-      }
+    var usersHere = searchUser.length == 0 ? [...users ]: [...usersFilter]
+    usersHere.sort(function (x, y){
+      let a = x.name.toUpperCase()
+      let b = y.name.toUpperCase()
       if(filter.name){
-       namesUser.sort((a, b) => {
-        if (a.name > b.name)
-          return -1
-        if (a.name < b.name)
-          return 1  
-        return 0
-       })
+        return a == b ? 0 : a < b ? 1 : -1
       } else {
-        namesUser.sort((a, b) => {
-          if (a.name < b.name)
-            return -1
-          if (a.name > b.name)
-            return 1  
-          return 0
-         })
-      }
-      namesUser.forEach(elelement =>{
-        for (var i = 0; i < usersHere.length; i++) {
-          if(elelement.name === usersHere[i].name && elelement.email === usersHere[i].email){
-            filterName.push(usersHere[i])
-           }
-        }
-      })
-      setUsersFilter(filterName)
+        return a == b ? 0 : a > b ? 1 : -1
+      }  
+    })
+    setUsersFilter(usersHere)
   }
 
   function filterStatus(){
-    const filterStatus = []
-    var namesStatus = []
-    var usersHere
-    if (searchUser.length == 0){
-      usersHere = users
-    } else {
-      usersHere = usersFilter
-    }
-
-    if(filter.status){
-      namesStatus.push(false)
-      namesStatus.push(true)
-  
-      namesStatus.forEach(elelement =>{
-        for (var i = 0; i < usersHere.length; i++) {
-        if(elelement === usersHere[i].status){
-           filterStatus.push(usersHere[i])
-        }
-       }
-      })
-    } else {
-        namesStatus.push(true)
-        namesStatus.push(false)
-       namesStatus.forEach(elelement =>{
-          for (var i = 0; i < usersHere.length; i++) {
-            if(elelement === usersHere[i].status){
-              filterStatus.push(usersHere[i])
-            }
-          }
-      })
-    }
-    setUsersFilter(filterStatus)
+    var usersHere = searchUser.length == 0 ? [...users ]: [...usersFilter]
+    usersHere.sort(function (x, y){
+      let a = x.status
+      let b = y.status
+      if(filter.status){
+        return a == b ? 0 : a < b ? 1 : -1
+      } else {
+        return a == b ? 0 : a > b ? 1 : -1
+      }  
+    })
+    setUsersFilter(usersHere)
   }
 
   function filterDate(){
-    const usersDate = []
-    var filterDate = []
-    var usersHere
-    if (searchUser.length == 0){
-      usersHere = users
-    } else {
-      usersHere = usersFilter
-    }
-
-    for (var i = 0; i < usersHere.length; i++) {
-      const date = new Date(usersHere[i].date)
-      usersDate.push({date: date})
-     }
-
-    if(filter.date){
-      usersDate.sort(function(a,b) { 
-        return b.date.getTime() - a.date.getTime() 
-      });
-    } else {
-      usersDate.sort(function(a,b) { 
-        return a.date.getTime() - b.date.getTime() 
-      });
-    }
-
+    const usersDate = searchUser.length == 0 ? [...users ]: [...usersFilter]
+    usersDate.sort(function(a,b) { 
+      a.date = new Date(a.date)
+      b.date = new Date(b.date)
+      if(filter.date){
+       return (b.date.getTime() - a.date.getTime()) + ""
+      } else {
+       return (a.date.getTime() - b.date.getTime()) + ""
+      }
+    });
     for (var i = 0; i < usersDate.length; i++) {
-      const date = usersDate[i].date
-      usersDate[i].date = date + ""
-     }
-  usersDate.forEach(elelement =>{
-    for (var i = 0; i < usersHere.length; i++) {
-    if(elelement.date == usersHere[i].date){
-      filterDate.push(usersHere[i])
+      usersDate[i].date = usersDate[i].date + ""
     }
-   }
-  })
-  setUsersFilter(filterDate)
+  setUsersFilter(usersDate)
   }
 
   function formatDate(date){
+    var newDate = new Date(date)
     if(window.screen.width > 1250){
-      var month
-      if (date.substr(4, 3) === "Jan") month = "Janeiro"
-      else if (date.substr(4, 3) === "Feb") month = "Fevereiro"
-      else if (date.substr(4, 3) === "Mar") month = "Março"
-      else if (date.substr(4, 3) === "Apr") month = "Abril"
-      else if (date.substr(4, 3) === "May") month = "Maio"
-      else if (date.substr(4, 3) === "Jun") month = "Junho"
-      else if (date.substr(4, 3) === "Jul") month = "Julho"
-      else if (date.substr(4, 3) === "Aug") month = "Augusto"
-      else if (date.substr(4, 3) === "Sep") month = "Setembro"
-      else if (date.substr(4, 3) === "Oct") month = "Outubro"
-      else if (date.substr(4, 3) === "Nov") month = "Novembro"
-      else if (date.substr(4, 3) === "Dec") month = "Dezembro"
-      return date.substr(8, 2) + " de " + month + " de " + date.substr(11, 4)
+      var month = newDate.getMonth()
+      return date.substr(8, 2) + " de " + months[month] + " de " + date.substr(11, 4)
     } else {
-      var newDate = new Date(date)
       return newDate.toLocaleDateString()
     }
 
@@ -223,29 +147,19 @@ function ComponentClients(){
     }
   }
 
-    const childToParentDelet = (childdata) => {
-      if(childdata.data){
-        context.setModalGlobal(true)
-        setModal({...modal, message: ErrorFirebase(childdata.data), type: "error", size:"little"})
-      } else {
-        setMenu(true)
-        setSelectUsers([])
-        setUsers(childdata)
-        setPages(Math.ceil(childdata.length / 10))
-        setWindowsAction({...windowsAction, createUser: false, updateUser: false})
-        setUsersFilter(childdata) 
-        context.setLoading(false)
-      }
+  const childToParentDelet = (childdata) => {
+    if(childdata.data){
+      context.setModalGlobal(true)
+      setModal({...modal, message: ErrorFirebase(childdata.data), type: "error", size:"little"})
+    } else {
+      ResetConfig(childdata)
     }
+  }
   // <--------------------------------- Disable User --------------------------------->
 
   async function DisableUser(){
-    const users = []
+    const users = [...usersFilter]
     const domain = new URL(window.location.href).origin
-    for(let i = 0; i < usersFilter.length; i++){
-      users.push(usersFilter[i])
-    }
-
     if(selectUsers.length > 0){
       context.setLoading(true)
       const result = await axios.post(`${domain}/api/users/disableUser`, {users: selectUsers, uid: auth.currentUser.uid})
@@ -258,12 +172,7 @@ function ComponentClients(){
           users[index].status = !users[index].status
           users[index].checked = false
         }
-        context.setLoading(false)
-        setSelectUsers([])
-        setMenu(true)
-        setUsers(users)
-        setUsersFilter(users)
-        context.setLoading(false)
+        ResetConfig(users)
       } else {
         context.setModalGlobal(true)
         context.setLoading(false)
@@ -278,34 +187,18 @@ function ComponentClients(){
   // <--------------------------------- Select User --------------------------------->
 
   async function SelectUsers(index){
-    const users = []
-    const select = []
-    for (var i = 0; i < usersFilter.length; i++) {
-      users.push(usersFilter[i])
-    }
+    const users = [...usersFilter]
     users[index].checked = !users[index].checked
-    for(let i = 0; i < users.length; i++){
-      if(users[i].checked === true){
-        select.push(users[i])
-      }
-    }
-    setSelectUsers(select)
+    const userSelect = users.filter(user => user.checked === true);
+    setSelectUsers(userSelect)
     setUsersFilter(users)
   }
 
   // <--------------------------------- Create User --------------------------------->
   const childToParentCreate = (childdata) => {
-    const users = []
-    for (var i = 0; i < usersFilter.length; i++) {
-      users.push(usersFilter[i])
-    }
+    const users = [...usersFilter]
     users.push(childdata)
-    setUsersFilter(users)
-    setPages(Math.ceil(users.length / 10))
-    setWindowsAction({...windowsAction, createUser: false, updateUser: false})
-    setUsers(users)
-    context.setLoading(false)
-    
+    ResetConfig(users)
   }
 
   const closedWindow = () => {
@@ -315,29 +208,27 @@ function ComponentClients(){
   // <--------------------------------- Edit User --------------------------------->
 
   const childToParentEdit = (childdata) => {
-    const users = []
+    const users = [...usersFilter]
+    const index = users.findIndex(user => user.id == childdata.id)
+    users.splice(index, 1)
     users.push(childdata)
-    for (var i = 0; i < usersFilter.length; i++) {
-      if(usersFilter[i].id != childdata.id){
-        users.push(usersFilter[i])
-      }
-    }
-    setMenu(true)
-    setUsersFilter(users)
-    setSelectUsers([])
-    setUsers(users)
-    setWindowsAction({...windowsAction, createUser: false, updateUser: false})
-    context.setLoading(false)
+    ResetConfig(users)
   }
-
-
   useEffect(() => {
     if(context.modalGlobal === false){
       setModal({...modal, message: "", type:"", size:""})
     }
   }, [context.modalGlobal]);
   
-
+function ResetConfig(){
+  setPages(Math.ceil(users.length / 10))
+  setMenu(true)
+  setUsersFilter(users)
+  setSelectUsers([])
+  setUsers(users)
+  setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
+  context.setLoading(false)
+}
 
 return (
       <section className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
@@ -386,7 +277,7 @@ return (
                     </th>
 
                     <th className='font-[400]'>
-                    <button onClick={() => (setFilter({...filter, status:! filter.status, nome: false, date:false}), filterStatus())}  className='flex items-center cursor-pointer'>
+                    <button onClick={() => (setFilter({...filter, status:! filter.status, name: false, date:false}), filterStatus())}  className='flex items-center cursor-pointer'>
                         <p>Status</p>
                         <Image alt="Imagem de uma flecha" className={`ml-[5px]  ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter}/>
                       </button>
@@ -407,15 +298,19 @@ return (
                 <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
                     <th className='h-[50px] max-sm:h-[40px]'>
                       <input type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px] ml-[5px]'/>
-                      </th>
+                    </th>
+
                     <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
                       <Image src={user.image} width={40} height={40} alt="Perfil"  className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
                       <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{user.name}</p>
                     </th>
+
                     <th className='font-[400] text-left pl-[20px] max-md:hidden'>
                       <p className='overflow-hidden whitespace-nowrap text-ellipsis max-w-[250px]'>{user.email}</p>
                     </th>
+
                     <th className='font-[400] max-lg:hidden text-left'>{formatDate(user.date)}</th>
+
                     <th className='font-[400] w-[80px] max-lg:w-[70px]'>
                       {user.status  ? 
                         <div className='bg-red/30 border-red text-red border-[1px] rounded-full'>
@@ -427,6 +322,7 @@ return (
                         </div>
                       }
                     </th>
+
                     <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                       <div className='flex justify-between'>
                         <button onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer bg-terciary p-[4px] flex justify-center items-center rounded-[8px]'>
@@ -441,12 +337,12 @@ return (
                 })}
                 </tbody>
               </table>
-              : 
+            : 
                 <div className='w-full h-full flex justify-center items-center flex-col'>
                   <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({...windowsAction, createUser: true})}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
                   <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
                 </div>
-                }
+            }
 
             {/* <--------------------------------- NavBar table ---------------------------------> */}
             {usersFilter.length > 0 ?
