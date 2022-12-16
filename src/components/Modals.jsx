@@ -48,8 +48,8 @@ function Modal(props) {
               :<></>}
               </div>
               <div className='flex w-full justify-end gap-4 bg-hilight self-end  pr-[10px] py-[10px] rounded-b-[4px] mt-[25px]'>
-                  <button onClick={() => (context.setActionCancel(false), context.setModalGlobal(false))} className='bg-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
-                  <button onClick={() => (context.setActionCancel(true), context.setModalGlobal(false))} className='bg-red/40 border-2 border-red hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] text-white '>Confirmar</button>
+                  <button onClick={() => (props.childModal("cancel"), context.setModalGlobal(false))} className='bg-strong hover:scale-[1.10] duration-300 p-[5px]  rounded-[8px] text-[20px] text-white '>Cancelar</button>
+                  <button onClick={() => (props.childModal(props.to), context.setModalGlobal(false))} className='bg-red/40 border-2 border-red hover:scale-[1.10]  duration-300 p-[5px] rounded-[8px] text-[20px] text-white '>Confirmar</button>
                 </div>
             </div>
           </div>

@@ -9,12 +9,15 @@ import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/aut
 import { auth, db} from '../../../firebase'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import ErrorFirebase from '../ErrorFirebase'
+import { useRouter } from 'next/navigation';
+import InputMask from 'react-input-mask';
 
 function Signin(){
   const context = useContext(AppContext)
   const [dataUser, setDataUser] = useState({email: "", password: "", cnpj:"", checked: false})
   const [eye, setEye] = useState(false)
   const [modal, setModal] = useState({message: "", type: "error"})
+  const router = useRouter()
 
   function SignInEmail(e){
     e.preventDefault()
@@ -27,10 +30,11 @@ function Signin(){
     context.setLoading(true)
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
     const data = await getDocs(q);
+    console.log(data.docs[0])
     if(data.docs[0] === undefined){
       context.setLoading(false)
       context.setModalGlobal(true)
-      setModal({message: "Este usuário não foi cadastrado."})
+      setModal({message: "Este usuário não foi cadastrado.", type:"error", size:"little"})
     } else {
       data.forEach((doc) => {
         SignIn(doc.data().email)
@@ -41,7 +45,7 @@ function Signin(){
     signInWithEmailAndPassword(auth, email, dataUser.password)
       .then((userCredential) => {
         context.setLoading(false)
-        const user = userCredential.user;
+        router.push("/Admin")
       })
       .catch((error) => {
         context.setLoading(false)
@@ -91,16 +95,6 @@ function Signin(){
       });
     }
   }
-
-  const cnpjMask = (value) => {
-    return value
-      .replace(/\D+/g, '') // não deixa ser digitado nenhuma letra
-      .replace(/(\d{2})(\d)/, '$1.$2') // captura 2 grupos de número o primeiro com 2 digitos e o segundo de com 3 digitos, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de número
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1/$2') // captura 2 grupos de número o primeiro e o segundo com 3 digitos, separados por /
-      .replace(/(\d{4})(\d)/, '$1-$2')
-      .replace(/(-\d{2})\d+?$/, '$1') // captura os dois últimos 2 números, com um - antes dos dois números
-    } 
 
     return (
       <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">
@@ -157,7 +151,7 @@ function Signin(){
               <fieldset className="flex flex-col">
               <label className='flex flex-col'>
                 CNPJ
-                <input  required  value={cnpjMask(dataUser.cnpj)} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='w-full text-[18px] bg-[#0000] outline-none py-[10px] border-[1px] border-black rounded-[8px] pl-[5px]' placeholder='Digite o cnpj'/>
+                <InputMask  required  mask="99.999.999/9999-99" value={dataUser.cnpj} onChange={(Text) => setDataUser({...dataUser, cnpj:Text.target.value})} type="text"   className='w-full text-[18px] bg-[#0000] outline-none py-[10px] border-[1px] border-black rounded-[8px] pl-[5px]' placeholder='Digite o cnpj'/>
               </label>
               </fieldset>
               <fieldset className="flex flex-col mt-[20px]">

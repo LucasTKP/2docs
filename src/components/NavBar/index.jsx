@@ -8,39 +8,29 @@ import Modals from '../../components/Modals'
 import {useContext} from 'react';
 import AppContext from '../../components/AppContext'
 import { usePathname } from 'next/navigation'
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { signOut} from "firebase/auth";
 import { db, auth } from '../../../firebase'
-import { collection, doc, updateDoc, where, getDocs } from "firebase/firestore";
+import {doc, updateDoc} from "firebase/firestore";
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
-function NavBar() {
+function NavBar(image) {
     const path = usePathname()
     const context = useContext(AppContext)
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState({status: false, message: "", type:"", size:""})
-    const [urlImageProfile, setUrlImageProfile] = useState(null)
+    const router = useRouter()
 
-    useEffect(() =>{
-        onAuthStateChanged(auth, (user) => {
-            GetUsers(user.email)
-        });
-    },[])
-  
-    async function GetUsers(email){
-        const querySnapshot = await getDocs(collection(db, "users"), where("email", "==", email));
-        querySnapshot.forEach((doc) => {
-            setUrlImageProfile(doc.data().image)
-        });
-    }
-
-    useEffect(() => {
-        if(context.actionCancel === true && modal.status === true){
+    
+    const childModal = (childdata) => {
+        if(childdata === "Exit"){
             signOut(auth).then(() => {
+                router.push("/")
             }).catch((error) => {
-
+                console.log(error)
             });
         }
-    },[context.actionCancel])
+      }
 
     useEffect(() => {
         if(context.modalGlobal === false){
@@ -82,7 +72,7 @@ function NavBar() {
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`px-[10px] w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
                         <Avatar.Root className="mt-[30px] max-lg:mt-[60px] flex flex-col">
-                            <Avatar.Image onClick={() => setAdminAuth()} width={80} height={80} className="cursor-pointer min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]  max-sm:max-w-[70px] max-sm:max-h-[70px]  rounded-full" src={urlImageProfile} alt="Imagem de perfil"/>
+                            <Avatar.Image onClick={() => setAdminAuth()} width={80} height={80} className="cursor-pointer min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]  max-sm:max-w-[70px] max-sm:max-h-[70px]  rounded-full" src={image.image} alt="Imagem de perfil"/>
                         </Avatar.Root>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
@@ -95,7 +85,7 @@ function NavBar() {
                 <div className='w-[90%] h-[3px] bg-terciary mt-[20px]'/>
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> window.location.href="/Admin"}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                        <button className="IconButton" onClick={()=> router.push("/Admin")}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -107,7 +97,7 @@ function NavBar() {
                     
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Arquivos" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> window.location.href="/Admin/Arquivos"}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                        <button className="IconButton" onClick={()=> router.push("/Admin/Arquivos")}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -116,10 +106,9 @@ function NavBar() {
                         </Tooltip.Content>
                     </Tooltip.Portal>
                 </Tooltip.Root>
-
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Clientes" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> window.location.href="/Admin/Clientes"}> <PersonIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                        <button className="IconButton" onClick={()=> router.push("/Admin/Clientes")}> <PersonIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -143,7 +132,7 @@ function NavBar() {
                 </Tooltip.Root>
             </Tooltip.Provider>
             </div>
-        <Modals message={modal.message} type={modal.type} size={modal.size}/>
+        <Modals message={modal.message} type={modal.type} size={modal.size} to={"Exit"} childModal={childModal} />
     </div>
   )
 }
