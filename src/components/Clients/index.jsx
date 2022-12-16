@@ -217,7 +217,7 @@ function ComponentClients(){
 
   const childModal = (childdata) => {
     if(childdata === "Delete"){
-      context.setLoading()
+      context.setLoading(true)
       context.setActionCancel(false)
       DeletUser({childToParentDelet, selectUsers, usersFilter})
     }

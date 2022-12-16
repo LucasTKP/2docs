@@ -124,7 +124,6 @@ function EditUser(props, {childToParentEdit, closedWindow}){
       nameImage: data.imageName,
       admin:false
     })
-    context.setEditUserModal(false)
     props.childToParentEdit(userAfterEdit)
   }
   
@@ -193,12 +192,12 @@ return (
 
             <label  className='flex flex-col max-sm'>
               Nome
-              <input type="text" value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o nome do cliente'/>
+              <input type="text" maxLength={30} value={dataUser.name} required  onChange={(Text) => setDataUser({...dataUser, name:Text.target.value})}  className='outline-none w-full p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o nome do cliente'/>
             </label>
 
             <label className='flex flex-col'>
               Email
-              <input required  value={dataUser.email} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o email'/>
+              <input required  value={dataUser.email} maxLength={40} onChange={(Text) => setDataUser({...dataUser, email:Text.target.value})} type="email"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite o email'/>
             </label>
             <div className='flex max-sm:flex-col justify-between gap-[5px] '>
               <label className='flex flex-col'>
@@ -231,7 +230,7 @@ return (
 
               <label className='flex flex-col'>
                 Empresa
-                <input required  value={dataUser.company} onChange={(Text) => setDataUser({...dataUser, company:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite a empresa'/>
+                <input required maxLength={25} value={dataUser.company} onChange={(Text) => setDataUser({...dataUser, company:Text.target.value})} type="text"   className='outline-none w-full text-[18px] p-[5px] bg-transparent border-2 border-black rounded-[8px]' placeholder='Digite a empresa'/>
               </label>
             </div>
             <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full max-sm:w-[80%] self-center h-[55px] max-sm:h-[50px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>

@@ -21,7 +21,7 @@ function CreateUser({childToParentCreate, closedWindow}){
   const [file, setFile] = useState({name: "padrao.png"})
   const [modal, setModal] = useState({message: "", type:"", size:""})
   const [fileDataURL, setFileDataURL] = useState(null);
-  const [eye , setEye] = useState(false)
+  const [eye , setEye] = useState(true)
   const domain = new URL(window.location.href).origin
 
   async function VerifyCnpj(e){
