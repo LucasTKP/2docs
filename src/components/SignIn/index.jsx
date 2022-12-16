@@ -11,6 +11,8 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import ErrorFirebase from '../ErrorFirebase'
 import { useRouter } from 'next/navigation';
 import InputMask from 'react-input-mask';
+import Image from 'next/image';
+import Logo from '../../../public/image/2core.png'
 
 function Signin(){
   const context = useContext(AppContext)
@@ -98,7 +100,9 @@ function Signin(){
 
     return (
       <section className="bg-primary w-screen h-screen flex flex-col justify-center items-center text-black">
+        <Image src={Logo} alt="Logo da empresa" height={150} width={150} className='rounded-full'/>
         <Tabs.Root  className="w-[400px] max-lsm:w-[320px]" defaultValue="tab1">
+  
           <p className="text-[40px] font-poiretOne">Login</p>
           <p className="text-[25px]  font-poiretOne">Entre com os dados enviados</p>
           <Tabs.List className="w-full mt-[20px] border-b-2 border-black flex justify-between" aria-label="Manage your account">
@@ -127,20 +131,6 @@ function Signin(){
                   <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
                 </div>
               </fieldset>
-
-              <div className='flex items-center mt-[10px] justify-between'>
-                <div>
-                  <Checkbox.Root  onClick={() => setDataUser({...dataUser, checked:!dataUser.checked})} className="w-[20px] h-[20px] bg-[#fff] border-2 border-[#666666] rounded-[4px]" defaultChecked={false} id="c1">
-                    <Checkbox.Indicator id={styles.checkbox} className="bg-[#000]">
-                      <CheckIcon />
-                    </Checkbox.Indicator>
-                  </Checkbox.Root>
-                  <label className="ml-[5px] text-[18px] max-lsm:text-[16px]"  htmlFor="c1">
-                    Lembrar de mim
-                  </label>
-                </div>
-                <button type="button" onClick={() => AlterPassword(dataUser.email)} className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
-              </div>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
               </button>
@@ -164,20 +154,6 @@ function Signin(){
                   <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
                 </div>
               </fieldset>
-
-              <div className='flex items-center mt-[10px] justify-between'>
-                <div>
-                  <Checkbox.Root className="w-[20px] h-[20px] bg-[#fff] border-2 border-[#666666] rounded-[4px]" defaultChecked={false} id="c1">
-                    <Checkbox.Indicator id={styles.checkbox} className="bg-[#000]">
-                      <CheckIcon />
-                    </Checkbox.Indicator>
-                  </Checkbox.Root>
-                  <label className="ml-[5px] text-[18px] max-lsm:text-[16px]" htmlFor="c1">
-                    Lembrar de mim
-                  </label>
-                </div>
-                <button type="button" onClick={() => AlterPasswordCnpj()} className='underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
-              </div>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
               </button>

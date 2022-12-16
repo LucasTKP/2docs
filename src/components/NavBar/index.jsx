@@ -14,6 +14,7 @@ import {doc, updateDoc} from "firebase/firestore";
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
+
 function NavBar(image) {
     const path = usePathname()
     const context = useContext(AppContext)
@@ -53,10 +54,10 @@ function NavBar(image) {
         <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
             <Tooltip.Root>
                 <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
-                    <button onClick={() => setMenu(!menu)} className='z-10 absolute top-[20px] left-[30px] max-sm:left-[20px] flex flex-col'>
-                        <div className={`w-[40px] h-[3px] bg-terciary transition duration-500 ease-in-out ${menu ? "" : "rotate-45"}`}/>
-                        <div className={`w-[40px] h-[3px] bg-terciary my-[8px] ${menu ? "" : "hidden"}`}/>
-                        <div className={`w-[40px] h-[3px] bg-terciary transition duration-500 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+                    <button id="Menu" aria-label="Botão menu" onClick={() => setMenu(!menu)} className='z-10 absolute top-[20px] left-[30px] max-sm:left-[15px] flex flex-col'>
+                        <div className={`w-[40px] max-sm:w-[35px] h-[3px] bg-terciary transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
+                        <div className={`w-[40px] max-sm:w-[35px]  h-[3px] bg-terciary my-[8px] ${menu ? "" : "hidden"}`}/>
+                        <div className={`w-[40px] max-sm:w-[35px]  h-[3px] bg-terciary transition duration-500 max-sm:duration-400 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                     </button>
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
@@ -67,12 +68,12 @@ function NavBar(image) {
                 </Tooltip.Portal>
             </Tooltip.Root>
         </Tooltip.Provider>
-        <div className={`bg-primary w-[100px] max-sm:max-w-[80px] fixed h-screen flex transition duration-1000 left-[0px] ${menu ? "max-lg:left-[-120px]" : ""}  flex-col items-center border-r-2 border-terciary`}> 
+        <div className={`bg-primary w-[100px] max-sm:max-w-[70px] fixed h-screen flex transition duration-1000 left-[0px] ${menu ? "max-lg:left-[-120px]" : ""}  flex-col items-center border-r-2 border-terciary`}> 
             <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
                 <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`px-[10px] w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
+                    <Tooltip.Trigger asChild className={`w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
                         <Avatar.Root className="mt-[30px] max-lg:mt-[60px] flex flex-col">
-                            <Avatar.Image onClick={() => setAdminAuth()} width={80} height={80} className="cursor-pointer min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] max-sm:min-w-[70px]  max-sm:min-h-[70px]  max-sm:max-w-[70px] max-sm:max-h-[70px]  rounded-full" src={image.image} alt="Imagem de perfil"/>
+                            <Avatar.Image onClick={() => setAdminAuth()} width={80} height={80} className="cursor-pointer h-[80px] w-[80px] max-sm:h-[60px] max-sm:w-[60px] rounded-full" src={image.image} alt="Imagem de perfil"/>
                         </Avatar.Root>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
@@ -82,10 +83,10 @@ function NavBar(image) {
                         </Tooltip.Content>
                     </Tooltip.Portal>
                 </Tooltip.Root>
-                <div className='w-[90%] h-[3px] bg-terciary mt-[20px]'/>
+                <div className='w-[90%] h-[3px] bg-terciary mt-[20px] max-sm:mt-[10px]'/>
                 <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> router.push("/Admin")}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[60px] flex justify-center items-center`}>
+                        <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="IconButton" onClick={()=> router.push("/Admin")}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -96,8 +97,8 @@ function NavBar(image) {
                 </Tooltip.Root>
                     
                 <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Arquivos" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> router.push("/Admin/Arquivos")}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Arquivos" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[60px] flex justify-center items-center`}>
+                        <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> router.push("/Admin/Arquivos")}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -107,8 +108,8 @@ function NavBar(image) {
                     </Tooltip.Portal>
                 </Tooltip.Root>
                 <Tooltip.Root>
-                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Clientes" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>
-                        <button className="IconButton" onClick={()=> router.push("/Admin/Clientes")}> <PersonIcon className='w-[50px] h-[50px] max-sm:w-[40px] max-sm:h-[40px] text-black'/> </button>
+                    <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin/Clientes" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[60px] flex justify-center items-center`}>
+                        <button className="IconButton" id="alb" title="Pagina De Clientes" aria-labelledby="labeldiv"  onClick={()=> router.push("/Admin/Clientes")}> <PersonIcon className='w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -121,7 +122,9 @@ function NavBar(image) {
                 <Tooltip.Root>
                     <div className='absolute bottom-[80px] w-[80%] h-[3px] bg-terciary mt-[20px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] w-full flex justify-center`}>
-                            <button className="IconButton" onClick={() => (context.setModalGlobal(true), setModal({status:true,  message:"Tem certeza que deseja sair da sua conta", type:"error", size:"big"}))} >  <Image src={iconExit} alt="Icone de sair" className='w-[40px] h-[40px]'/> </button>
+                            <button className="IconButton" onClick={() => (context.setModalGlobal(true), setModal({status:true,  message:"Tem certeza que deseja sair da sua conta", type:"error", size:"big"}))} >
+                                <Image src={iconExit} alt="Icone de sair" className='w-[40px] max-sm:w-[35px] h-[40px] max-sm:h-[35px]'/> 
+                            </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>

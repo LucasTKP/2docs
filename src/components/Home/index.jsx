@@ -1,7 +1,7 @@
 function ComponentHome () {
   return (
     <section>
-      <p className='text-black'>Homeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
+      <p className='text-black'>Homeeeeeeee</p>
     </section>
   )
 }
