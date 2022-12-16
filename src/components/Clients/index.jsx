@@ -236,29 +236,29 @@ return (
           <p className=' font-poiretOne text-[40px]'>Clientes</p>
           <div className=' w-full relative border-[2px] border-terciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
-              <div className='flex items-center'>
-                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{usersFilter.length} <span className='text-secondary'>Clientes</span></p>
+              <div className='flex items-center bg-transparent'>
+                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{usersFilter.length} <span className='text-black'>Clientes</span></p>
                 <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px]"/>
-                <input type="text" value={searchUser} onChange={(Text) => setSearchUser(Text.target.value)}  className='w-[300px] text-terciary max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px]' placeholder='Buscar' ></input>
+                <input type="text" value={searchUser} onChange={(Text) => setSearchUser(Text.target.value)}  className='w-[300px] text-black max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px]' placeholder='Buscar' ></input>
               </div>
               <div className={`flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${menu ? "" : "max-lg:bg-[#959595]"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
-                <button onClick={() => setMenu(!menu)} className={`flex-col self-center hidden max-lg:flex ${menu ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
-                    <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 ease-in-out ${menu ? "" : "rotate-45"}`}/>
+                <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`flex-col self-center none max-lg:flex ${menu ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
+                    <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
                     <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
-                    <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+                    <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => DisableUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-terciary"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
-                <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-terciary"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
+                <button onClick={() => DisableUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
+                <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
             </div>
             {usersFilter.length > 0 ?
-              <table className='w-full mt-[10px]'>
+              <table className='w-full mt-[10px] bg-transparent'>
 
                 {/* <--------------------------------- HeadTable ---------------------------------> */}
                 <thead>
                   <tr className='bg-[#DDDDDD] border-b-[2px] border-t-[2px] border-terciary text-[20px] max-lg:text-[18px] max-md:text-[17px]'>
-                    <th className='py-[10px]'><input type="checkbox" disabled={true} className='w-[20px] h-[20px]'/></th>
+                    <th className='py-[10px]'><input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className='w-[20px] h-[20px]'/></th>
                     
                     <th className='font-[400] text-left pl-[20px] max-lg:pl-[10px]'>
                       <button onClick={() => (setFilter({...filter, name:! filter.name, status: false, date:false}), filterName())} className='flex items-center cursor-pointer'>
@@ -297,7 +297,7 @@ return (
                 return(
                 <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
                     <th className='h-[50px] max-sm:h-[40px]'>
-                      <input type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px] ml-[5px]'/>
+                        <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px] ml-[5px]'/>
                     </th>
 
                     <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
@@ -313,11 +313,11 @@ return (
 
                     <th className='font-[400] w-[80px] max-lg:w-[70px]'>
                       {user.status  ? 
-                        <div className='bg-red/30 border-red text-red border-[1px] rounded-full'>
+                        <div className='bg-red/20 border-red text-[#c50000] border-[1px] rounded-full'>
                           Inativo
                         </div>
                         :
-                        <div className='bg-greenV/30 border-greenV text-greenV border-[1px] rounded-full'>
+                        <div className='bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-full'>
                           Ativo 
                         </div>
                       }
@@ -325,12 +325,12 @@ return (
 
                     <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                       <div className='flex justify-between'>
-                        <button onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer bg-terciary p-[4px] flex justify-center items-center rounded-[8px]'>
+                        <button id="alb" title="Botão De editar usuario" aria-labelledby="labeldiv" onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer bg-terciary p-[4px] flex justify-center items-center rounded-[8px]'>
                           <Pencil1Icon width={25} height={25}/>
                         </button>
-                        <div className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
+                        <button id="alb" title="Botão De ver documentos" aria-labelledby="labeldiv" className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
                           <FileTextIcon width={25} height={25}/>
-                        </div>
+                        </button>
                       </div>
                     </th>
                   </tr>)}     

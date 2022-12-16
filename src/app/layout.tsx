@@ -46,11 +46,12 @@ useEffect(() => {
       }
     }
   });
-},[children])
+},[auth, router])
 
 
   return (
-    <html>
+    <html lang="pt-br">
+      <title>Software para auxiliar o gerenciamento dos arquivos.</title>
       <head />
       <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
       <AppContext.Provider value={{
