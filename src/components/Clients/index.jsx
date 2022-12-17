@@ -220,7 +220,7 @@ function ComponentClients(){
     }
   }, [context.modalGlobal]);
   
-function ResetConfig(){
+function ResetConfig(users){
   setPages(Math.ceil(users.length / 10))
   setMenu(true)
   setUsersFilter(users)

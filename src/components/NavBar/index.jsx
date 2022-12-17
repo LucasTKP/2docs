@@ -50,7 +50,7 @@ function NavBar(image) {
     }
 
   return (
-    <div className='left-[0px] z-10 max-h-screen h-full'>
+    <div className='left-[0px] fixed max-h-screen h-full z-50'>
         <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
             <Tooltip.Root>
                 <Tooltip.Trigger asChild className={`max-lg:flex  hidden`}>
@@ -68,7 +68,7 @@ function NavBar(image) {
                 </Tooltip.Portal>
             </Tooltip.Root>
         </Tooltip.Provider>
-        <div className={`bg-primary w-[100px] fixed max-sm:max-w-[70px] h-full flex transition duration-1000 left-[0px] ${menu ? "max-lg:left-[-120px]" : ""}  flex-col items-center border-r-2 border-terciary`}> 
+        <div className={`bg-primary w-[100px] max-sm:max-w-[70px] h-full  ${menu ? "hidden" : "flex"}  flex-col items-center border-r-2 border-terciary`}> 
             <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`w-full h-[100px] max-sm:max-h-[80px] flex justify-center items-center`}>

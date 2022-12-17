@@ -31,11 +31,7 @@ async function deletUser({childToParentDelet, selectUsers, usersFilter}) {
       }
     
       async function DeleteFile(){
-        const users = []
-        for(let i = 0; i < usersFilter.length; i++){
-            users.push(usersFilter[i])
-          }
-
+        const users = [...usersFilter]
         for(let i = 0; i < selectUsers.length; i++){
           const result = await deleteDoc(doc(db, "users", selectUsers[i].id));
           const index = users.findIndex(user => user.id === selectUsers[i].id)
