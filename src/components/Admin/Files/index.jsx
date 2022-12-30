@@ -102,7 +102,8 @@ function ComponentUpload(){
     const data = {
       file: e.target.files,
       id: id,
-      folder: folderName
+      folder: folderName,
+      from: "admin"
     }
     toast.info("Armazenando arquivos...")
     UploadFile({data, childToParentUpload})
@@ -183,7 +184,7 @@ return (
                 <button onClick={() => ConfirmationDeleteFile()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 {trash ? 
                   <button onClick={() => ConfirmationEnableFile()} className={`bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
-                    Reativar
+                    Recuperar
                   </button>
                 : 
                   <label className={`bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>

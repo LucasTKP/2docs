@@ -160,7 +160,9 @@ function CreateUser({childToParentCreate, closedWindow}){
   }, [file]);
 
   useEffect(() => {
-    setDataUser({...dataUser, password: dataUser.name.substr(0, 5) + Math.floor(Math.random() * 100000)})
+    const password = dataUser.name.substr(0, 5).replace(/\s+/g, '') + Math.floor(Math.random() * 100000)
+    
+    setDataUser({...dataUser, password: password})
   },[dataUser.name])
 
 

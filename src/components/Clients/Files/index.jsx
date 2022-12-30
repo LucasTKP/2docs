@@ -14,6 +14,8 @@ import folder from '../../../../public/icons/folder.svg'
 import Link from 'next/link'
 import TableFiles from '../../Files/tableFiles'
 import DownloadsFile from '../../Files/dowloadFiles';
+import Modals from '../../Modals'
+import DeletFiles from '../../Admin/Files/deletFiles';
 
 function ComponentUpload(){
   const context = useContext(AppContext)
@@ -26,6 +28,8 @@ function ComponentUpload(){
   const [documents, setDocuments] = useState({view: false, url: ""})
   const params = useSearchParams()
   const folderName = params.get("folder")
+  const [modal, setModal] = useState({status: false, message: "", subMessage1: ""})
+  const [indexFile, setIndexFile] = useState()
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
@@ -80,7 +84,8 @@ function ComponentUpload(){
     const data = {
       file: e.target.files,
       id: auth.currentUser.uid,
-      folder: folderName
+      folder: folderName,
+      from: "user"
     }
     toast.info("Armazenando arquivos...")
     UploadFile({data, childToParentUpload})
@@ -98,6 +103,21 @@ function ComponentUpload(){
     setFilesFilter(files)
     setSelectFiles([])
     setFiles(files)
+  }
+
+  function ConfirmationDeleteFile(index){
+    setIndexFile(index)
+    setModal({...modal, status:true, message: "Tem certeza que deseja excluir este arquivo?", subMessage1: "Não será possivel recuperar."})
+  }
+
+  const childModal = () => {
+    toast.info("Deletando pasta e arquivos, aguarde.")
+    setModal({...modal, status:false})
+    deletFile()
+  }
+
+  function deletFile(){
+    DeletFiles({files:files, selectFiles:[filesFilter[indexFile]], ResetConfig:ResetConfig})
   }
 
 return (
@@ -131,10 +151,11 @@ return (
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} document={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile}/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} document={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile}/>
           </div>
         </div>
         {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}
+        {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} files={modal.files} childModal={childModal}/> : <></>}
       </div>
   )
   }

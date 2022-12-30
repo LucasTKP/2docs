@@ -6,6 +6,7 @@ import { ref, deleteObject} from "firebase/storage";
 async function deletFiles(props) {
     const filesHere = props.files
     const selectFiles = props.selectFiles
+    console.log(selectFiles.length)
     try{
         if(selectFiles.length > 0) {
           for(let i = 0; i < selectFiles.length; i++){

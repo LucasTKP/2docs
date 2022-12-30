@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
         .then((snapshot) => {
           getDownloadURL(ref(storage, 'files/' + referencesFile))
           .then((url) => { 
-            UploadFilestore({folder:props.data.folder, url, nameFile:referencesFile, name:name, size:size, id:props.data.id, file: type, function: props.childToParentUpload})
+            UploadFilestore({from:props.data.from, folder:props.data.folder, url, nameFile:referencesFile, name:name, size:size, id:props.data.id, file: type, function: props.childToParentUpload})
           })
           .catch((error) => {
             toast.error("Não foi possivel armazenar o " + name)
@@ -57,7 +57,8 @@ import { toast } from 'react-toastify';
         type:type, 
         trash: false,
         viwed: false,
-        folder: props.folder
+        folder: props.folder,
+        from: props.from
       });
 
       const data = {
@@ -71,7 +72,8 @@ import { toast } from 'react-toastify';
         urlDownload: urlDownload,
         trash: false,
         viwed: false,
-        folder: props.folder
+        folder: props.folder,
+        from: props.from
       }
       toast.success("O " + props.name + " foi armazenado com sucesso.")
       props.function(data)
