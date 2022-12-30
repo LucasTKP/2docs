@@ -2,19 +2,21 @@
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
-import Modals from '../Modals'
-import AppContext from '../AppContext';
-import ErrorFirebase from '../ErrorFirebase';
-import { auth, storage, db } from '../../../firebase'
+import Modals from '../../Modals'
+import AppContext from '../../AppContext';
+import ErrorFirebase from '../../ErrorFirebase';
+import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { doc, updateDoc } from "firebase/firestore";  
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import InputMask from 'react-input-mask';
+import { toast } from 'react-toastify';
 
 
-function EditUser(props, {childToParentEdit, closedWindow}){
+function EditUser(props){
+  console.log(props.user)
   const user = props.user
   const imageMimeType = /image\/(png|jpg|jpeg)/i;
   const context = useContext(AppContext)
@@ -36,25 +38,21 @@ function EditUser(props, {childToParentEdit, closedWindow}){
         context.setModalGlobal(true)
         setModal({message: "Este CNPJ já está cadastrado.", type:"error", size:"little"})
       } else {
-        UpdateDataUser()
+        toast.promise(UpdateDataUser(),{pending:"Salvando usuário..."})
       }
     } else {
-      UpdateDataUser()
+      toast.promise(UpdateDataUser(),{pending:"Salvando usuário..."})
     }
 
   }
 
   async function UpdateDataUser() {
-    context.setLoading(true)
-    console.log(dataUser.email)
-    console.log(user.email)
     if(dataUser.email != user.email){
       const result = await axios.post(`${domain}/api/users/updateUser`, {userId: user.id, data:{email: dataUser.email}, uid: auth.currentUser.uid})
       if(result.data.uid){
         UpdatePhoto()
       } else {
         context.setModalGlobal(true)
-        context.setLoading(false)
         setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
       }
     } else {
@@ -76,11 +74,10 @@ function EditUser(props, {childToParentEdit, closedWindow}){
               UpdateBdUser({imageName: referencesFile, urlImage: url})
           })
           .catch((error) => {
-            context.setLoading(false)
+            console.log(error)
           }); 
         })
         .catch((error) => {
-          context.setLoading(false)
           context.setModalGlobal(true)
           setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
       });
@@ -121,6 +118,7 @@ function EditUser(props, {childToParentEdit, closedWindow}){
       company: dataUser.company,
       image: data.urlImage,
       nameImage: data.imageName,
+      status: user.status,
       admin:false,
       date: user.date
     }

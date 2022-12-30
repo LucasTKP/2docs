@@ -20,10 +20,10 @@ useEffect(() => {
       if (user) {
         auth.currentUser.getIdTokenResult().then((idTokenResult) => {
           if(idTokenResult.claims.admin){
+            router.push("/Admin")
+          } else {
             setOnLoad(true)
             GetUsers(user.email)
-          } else {
-            router.push("/Clientes")
           }
         })
       } else {
@@ -44,7 +44,7 @@ useEffect(() => {
       <section>
         {onLoad ? 
         <>
-          <NavBar image={urlImageProfile} user={"Admin"}/>
+          <NavBar image={urlImageProfile} user={"Clients"}/>
           <main>{children}</main>
         </>
         : <></>}
