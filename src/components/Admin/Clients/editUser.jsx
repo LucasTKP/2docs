@@ -2,7 +2,6 @@
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
-import Modals from '../../Modals'
 import AppContext from '../../AppContext';
 import ErrorFirebase from '../../ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
@@ -16,13 +15,10 @@ import { toast } from 'react-toastify';
 
 
 function EditUser(props){
-  console.log(props.user)
   const user = props.user
   const imageMimeType = /image\/(png|jpg|jpeg)/i;
-  const context = useContext(AppContext)
   const [dataUser, setDataUser] = useState({id:user.id, name: user.name, email:user.email, cnpj: user.cnpj, phone:user.phone, password:user.password, company:user.company, imageName: user.nameImage, urlImage: user.image, date: user.date})
   const [file, setFile] = useState({name: "padrao.png"})
-  const [modal, setModal] = useState({message: "", type:"", size:""})
   const [fileDataURL, setFileDataURL] = useState(user.image);
   const [eye , setEye] = useState(false)
   const domain = new URL(window.location.href).origin
@@ -35,8 +31,7 @@ function EditUser(props){
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {user = doc.data() });
       if(user != undefined){
-        context.setModalGlobal(true)
-        setModal({message: "Este CNPJ já está cadastrado.", type:"error", size:"little"})
+        toast.error("Este CNPJ já está cadastrado.")
       } else {
         toast.promise(UpdateDataUser(),{pending:"Salvando usuário..."})
       }
@@ -52,8 +47,7 @@ function EditUser(props){
       if(result.data.uid){
         UpdatePhoto()
       } else {
-        context.setModalGlobal(true)
-        setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
+        ErrorFirebase(result.data)
       }
     } else {
       UpdatePhoto()
@@ -78,8 +72,7 @@ function EditUser(props){
           }); 
         })
         .catch((error) => {
-          context.setModalGlobal(true)
-          setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
+          ErrorFirebase(error)
       });
       } else {
         getDownloadURL(ref(storage, 'images/' + referencesFile))
@@ -94,7 +87,6 @@ function EditUser(props){
       UpdateBdUser({imageName: user.nameImage, urlImage: user.image})
     }
   }
-
 
   function DeletePhoto(){
     if(user.nameImage != "padrao.png"){
@@ -151,9 +143,7 @@ function EditUser(props){
   const changeHandler = (e) => {
     const file = e.target.files[0];
     if (!file.type.match(imageMimeType)) {
-      context.setModalGlobal(true)
-      setModal({...modal, message:"Não é permitido armazenar este tipo de arquivo, escolha uma imagem.", type:"error", size:"little"});
-      return;
+      return toast.error("Não é permitido armazenar este tipo de arquivo, escolha uma imagem.")
     }
     setFile(file);
   }
@@ -179,12 +169,6 @@ function EditUser(props){
       }
     }
   }, [file]);
- 
-  useEffect(() => {
-    if(context.modalGlobal === false){
-      setModal({message: "", type:"", size:""})
-    }
-  }, [context.modalGlobal]);
 
 return (
       <>
@@ -247,9 +231,7 @@ return (
                 Salvar
             </button>
           </form>
-          
         </div>
-        <Modals message={modal.message} type={modal.type} size={modal.size}/>
       </>
   )
   }

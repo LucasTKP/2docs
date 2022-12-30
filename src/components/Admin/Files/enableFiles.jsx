@@ -10,7 +10,8 @@ async function EnableFiles(props) {
 
       try{
         for(let i = 0; i < selectFiles.length; i++){
-          if(folders.includes(selectFiles[i].folder === false)){
+          const folderStatus = folders.findIndex(folder => folder.name === selectFiles[i].folder)
+          if(folderStatus  == -1){
             folders.push({name: selectFiles[i].folder, color: "#BE0000"})
             await updateDoc(doc(db, 'users', selectFiles[i].id_user), {
               folders: folders

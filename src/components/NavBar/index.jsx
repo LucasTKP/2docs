@@ -5,39 +5,26 @@ import * as Avatar from '@radix-ui/react-avatar';
 import iconExit from '../../../public/icons/exit.svg'
 import Image from 'next/image'
 import Modals from '../../components/Modals'
-import {useContext} from 'react';
-import AppContext from '../../components/AppContext'
 import { usePathname } from 'next/navigation'
 import { signOut} from "firebase/auth";
-import { db, auth } from '../../../firebase'
-import {doc, updateDoc} from "firebase/firestore";
-import axios from 'axios';
+import { auth } from '../../../firebase'
 import { useRouter } from 'next/navigation';
 
 
 function NavBar(props) {
     const path = usePathname()
-    const context = useContext(AppContext)
     const [menu, setMenu] = useState(true)
     const [modal, setModal] = useState({status: false, message: "", type:"", size:""})
     const router = useRouter()
-
-    
-    const childModal = (childdata) => {
-        if(childdata === "Exit"){
-            signOut(auth).then(() => {
-                router.push("/")
-            }).catch((error) => {
-                console.log(error)
-            });
-        }
+ 
+    const childModal = () => {
+        signOut(auth).then(() => {
+            setModal({status: false, message: "", type:"", size:""})
+            router.push("/")
+        }).catch((error) => {
+            console.log(error)
+        });
       }
-
-    useEffect(() => {
-        if(context.modalGlobal === false){
-          setModal({...modal, message: "", type:"", size:""})
-        }
-      }, [context.modalGlobal]);
 
     async function setAdminAuth(){
     // const id = "BSpONHzk8kPfOzvGQuZ9ov6GJuH3"
@@ -124,7 +111,7 @@ function NavBar(props) {
                 <Tooltip.Root>
                     <div className='absolute bottom-[80px] w-[80%] h-[3px] bg-terciary mt-[20px]'/>
                         <Tooltip.Trigger asChild className={`absolute bottom-[20px] w-full flex justify-center`}>
-                            <button className="IconButton" onClick={() => (context.setModalGlobal(true), setModal({status:true,  message:"Tem certeza que deseja sair da sua conta", type:"error", size:"big"}))} >
+                            <button className="IconButton" onClick={() => setModal({status:true,  message:"Tem certeza que deseja sair da sua conta"})} >
                                 <Image src={iconExit} alt="Icone de sair" className='w-[40px] max-sm:w-[35px] h-[40px] max-sm:h-[35px]'/> 
                             </button>
                         </Tooltip.Trigger>
@@ -137,7 +124,7 @@ function NavBar(props) {
                 </Tooltip.Root>
             </Tooltip.Provider>
             </div>
-        <Modals message={modal.message} type={modal.type} size={modal.size} to={"Exit"} childModal={childModal} />
+            {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={undefined} subMessage2={undefined} user={modal.user} childModal={childModal}/> : <></>}
     </div>
   )
 }

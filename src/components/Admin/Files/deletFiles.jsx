@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import {db, storage} from '../../../../firebase'
-import { doc,deleteDoc } from "firebase/firestore";  
+import { doc,deleteDoc} from "firebase/firestore";  
 import { ref, deleteObject} from "firebase/storage";
 
 async function deletFiles(props) {

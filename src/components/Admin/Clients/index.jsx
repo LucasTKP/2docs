@@ -1,14 +1,9 @@
 'use client'
 import { MagnifyingGlassIcon} from '@radix-ui/react-icons';
-import Image from 'next/image'
-import iconNullClient from '../../../../public/icons/nullClient.svg'
-import iconSearchUser from '../../../../public/icons/searchUser.svg'
 import React, {useState, useContext, useEffect} from 'react'
 import AppContext from '../../AppContext';
 import {db, auth} from '../../../../firebase'
 import { collection, where, getDocs, doc, updateDoc, query } from "firebase/firestore";  
-import { Pencil1Icon, FileTextIcon } from '@radix-ui/react-icons';
-import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
 import EditUser from './editUser'
 import CreateUser from './createUser'
 import DeletUser from './deletUser'
@@ -16,24 +11,20 @@ import Modals from '../../Modals'
 import axios from 'axios';
 import ErrorFirebase from '../../ErrorFirebase';
 import { toast } from 'react-toastify';
-import Link from 'next/link'
-
-
+import TableClients from './tableClients';
 
 function ComponentClients(){
   const context = useContext(AppContext)
   const [users, setUsers] = useState([])
   const [usersFilter, setUsersFilter] = useState([])
-  const [filter, setFilter] = useState({name: false, date:false, status:false})
   const [searchUser, setSearchUser] = useState("")
   const [userEdit, setUserEdit] = useState()
   const [selectUsers, setSelectUsers] = useState([])
-  const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: "",  type:"", size:"", user:"" })
-  const [showItens, setShowItens] = useState({min:-1, max:10})
+  const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   const [windowsAction, setWindowsAction] = useState({createUser: false, updateUser: false, deletUser: false})
   const [pages, setPages] = useState(0)
   const [menu, setMenu] = useState(true)
-  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() =>{
       context.setLoading(true)
@@ -56,64 +47,6 @@ function ComponentClients(){
     context.setLoading(false)
   }
 
-  // <--------------------------------- Filters Table --------------------------------->
-
-  function filterName(){
-    var usersHere = searchUser.length == 0 ? [...users ] : [...usersFilter]
-    usersHere.sort(function (x, y){
-      let a = x.name.toUpperCase()
-      let b = y.name.toUpperCase()
-      if(filter.name){
-        return a == b ? 0 : a < b ? 1 : -1
-      } else {
-        return a == b ? 0 : a > b ? 1 : -1
-      }  
-    })
-    setUsersFilter(usersHere)
-  }
-
-  function filterStatus(){
-    var usersHere = searchUser.length == 0 ? [...users ]: [...usersFilter]
-    usersHere.sort(function (x, y){
-      let a = x.status
-      let b = y.status
-      if(filter.status){
-        return a == b ? 0 : a < b ? 1 : -1
-      } else {
-        return a == b ? 0 : a > b ? 1 : -1
-      }  
-    })
-    setUsersFilter(usersHere)
-  }
-
-  function filterDate(){
-    const usersDate = searchUser.length == 0 ? [...users ]: [...usersFilter]
-    usersDate.sort(function(a,b) { 
-      a.date = new Date(a.date)
-      b.date = new Date(b.date)
-      if(filter.date){
-       return (b.date.getTime() - a.date.getTime()) + ""
-      } else {
-       return (a.date.getTime() - b.date.getTime()) + ""
-      }
-    });
-    for (var i = 0; i < usersDate.length; i++) {
-      usersDate[i].date = usersDate[i].date + ""
-    }
-  setUsersFilter(usersDate)
-  }
-
-  function formatDate(date){
-    var newDate = new Date(date)
-    if(window.screen.width > 1250){
-      var month = newDate.getMonth()
-      return date.substr(8, 2) + " de " + months[month] + " de " + date.substr(11, 4)
-    } else {
-      return newDate.toLocaleDateString()
-    }
-
-  }
-
   useEffect(() => {
     if(searchUser != null){
       const searchUserFilter = []
@@ -128,30 +61,25 @@ function ComponentClients(){
 
    // <--------------------------------- Delete User --------------------------------->
    function ConfirmationDeleteUser(){
-    context.setModalGlobal(true)
     if(selectUsers.length > 0){
       if(selectUsers.length === 1){
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuário", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", type:"error", size:"big", user: selectUsers[0].name})
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir o usuário", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user: selectUsers[0].name + "?"})
       } else {
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes usuários", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", type:"error", size:"big", user:null})
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes usuários", subMessage1: "Será permanente.", subMessage2:"Os documentos serão apagados também.", user:null})
       }
     } else {
-      context.setModalGlobal(true)
-      setModal({...modal, message: "Selecione um usuário para deletar.", type: "error", size:"little"})
+      toast.error("Selecione um usuário para deletar.")
     }
   }
 
-  const childModal = (childdata) => {
-    if(childdata === "Delete"){
-      context.setActionCancel(false)
-      DeletUser({childToParentDelet, selectUsers, usersFilter})
-    }
+  const childModal = () => {
+    DeletUser({childToParentDelet, selectUsers, usersFilter})
+    setModal({status: false, message: "", subMessage1: "", subMessage2: "", user:"" })
   }
 
   const childToParentDelet = (childdata) => {
     if(childdata.data){
-      context.setModalGlobal(true)
-      setModal({...modal, message: ErrorFirebase(childdata.data), type: "error", size:"little"})
+      ErrorFirebase(childdata.data)
     } else {
       ResetConfig(childdata)
       toast.success("Usuário deletado.")
@@ -160,7 +88,7 @@ function ComponentClients(){
   // <--------------------------------- Disable User --------------------------------->
 
   async function DisableUser(){
-    const users = [...usersFilter]
+    const usersHere = [...usersFilter]
     const domain = new URL(window.location.href).origin
     if(selectUsers.length > 0){
       const result = await axios.post(`${domain}/api/users/disableUser`, {users: selectUsers, uid: auth.currentUser.uid})
@@ -169,18 +97,20 @@ function ComponentClients(){
           await updateDoc(doc(db, 'users', selectUsers[i].id), {
             status: !selectUsers[i].status,
           })
-          const index = users.findIndex( element => element.id === selectUsers[i].id)
-          users[index].status = !users[index].status
-          users[index].checked = false
+          const index = usersHere.findIndex( element => element.id === selectUsers[i].id)
+          usersHere[index].status = !users[index].status
+          usersHere[index].checked = false
         }
-        ResetConfig(users)
+        setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
+        setUsersFilter(usersHere)
+        setMenu(true)
+        setSelectUsers([])
       } else {
-        context.setModalGlobal(true)
-        setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
+        ErrorFirebase(result.data)
       }
     } else {
-      context.setModalGlobal(true)
-      setModal({...modal, message: "Nenhum usuário foi selecionado", type: "error", size:"little"})
+      toast.error("Nenhum usuário foi selecionado")
+      throw error
     }
   }
 
@@ -216,20 +146,15 @@ function ComponentClients(){
     ResetConfig(users)
     toast.success("Usuário editado com sucesso")
   }
-  useEffect(() => {
-    if(context.modalGlobal === false){
-      setModal({...modal, message: "", type:"", size:""})
-    }
-  }, [context.modalGlobal]);
   
-function ResetConfig(users){
+  function ResetConfig(users){
   setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
   setUsersFilter(users)
   setPages(Math.ceil(users.length / 10))
   setMenu(true)
   setSelectUsers([])
   setUsers(users)
-}
+  }
 
 return (
       <section className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
@@ -253,113 +178,13 @@ return (
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
             </div>
-            {usersFilter.length > 0 ?
-              <table className='w-full mt-[10px] bg-transparent'>
-
-                {/* <--------------------------------- HeadTable ---------------------------------> */}
-                <thead>
-                  <tr className='bg-[#DDDDDD] border-b-[2px] border-t-[2px] border-terciary text-[20px] max-lg:text-[18px] max-md:text-[17px]'>
-                    <th className='py-[10px]'><input aria-label="checkbox demonstrativo" type="checkbox" disabled={true} className='w-[20px] h-[20px]'/></th>
-                    
-                    <th className='font-[400] text-left pl-[20px] max-lg:pl-[10px]'>
-                      <button onClick={() => (setFilter({...filter, name:! filter.name, status: false, date:false}), filterName())} className='flex items-center cursor-pointer'>
-                        <p>Nome</p> 
-                        <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.name ? "rotate-180" : ""}`}src={ArrowFilter}/>
-                      </button>
-                    </th>
-
-                    <th className='font-[400] text-left pl-[20px] max-md:hidden'>Email</th>
-
-                    <th className='font-[400] max-lg:hidden'>
-                      <button onClick={() => (setFilter({...filter, date:! filter.date, status: false, name:false}) ,filterDate())} className='flex items-center cursor-pointer'>
-                        <p className='text-left'>Data de cadastro</p>
-                        <Image alt="Imagem de uma flecha" className={`ml-[5px] ${filter.date ? "rotate-180" : ""}`} src={ArrowFilter}/>
-                      </button>
-                    </th>
-
-                    <th className='font-[400]'>
-                    <button onClick={() => (setFilter({...filter, status:! filter.status, name: false, date:false}), filterStatus())}  className='flex items-center cursor-pointer'>
-                        <p>Status</p>
-                        <Image alt="Imagem de uma flecha" className={`ml-[5px]  ${filter.status ? "rotate-180" : ""}`} src={ArrowFilter}/>
-                      </button>
-                    </th>
-
-                    <th className='font-[400]'>Ações</th>
-
-                  </tr>
-                </thead>
-
-                {/* <--------------------------------- BodyTable ---------------------------------> */}
-                <tbody>
-                {usersFilter.map((user, index) =>{
-                  var checked = user.checked
-
-                  if( showItens.min < index && index < showItens.max){
-                return(
-                <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
-                    <th className='h-[50px] max-sm:h-[40px]'>
-                      <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
-                    </th>
-
-                    <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
-                      <Image src={user.image} width={40} height={40} alt="Perfil"  className='text-[10px] mt-[3px] rounded-full mr-[10px] max-w-[40px] min-w-[40px] min-h-[40px] max-h-[40px]  max-md:min-w-[30px] max-md:max-w-[30px]  max-md:min-h-[30px] max-md:max-h-[30px]'/>
-                      <p className='overflow-hidden whitespace-nowrap text-ellipsis  max-w-[180px] max-lg:max-w-[130px] max-lsm:max-w-[80px]'>{user.name}</p>
-                    </th>
-
-                    <th className='font-[400] text-left pl-[20px] max-md:hidden'>
-                      <p className='overflow-hidden whitespace-nowrap text-ellipsis max-w-[250px]'>{user.email}</p>
-                    </th>
-
-                    <th className='font-[400] max-lg:hidden text-left'>{formatDate(user.date)}</th>
-
-                    <th className='font-[400] w-[80px] max-lg:w-[70px]'>
-                      {user.status  ? 
-                        <div className='bg-red/20 border-red text-[#c50000] border-[1px] rounded-full'>
-                          Inativo
-                        </div>
-                        :
-                        <div className='bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-full'>
-                          Ativo 
-                        </div>
-                      }
-                    </th>
-
-                    <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
-                      <div className='flex justify-between'>
-                        <button id="alb" title="Botão De editar usuario" aria-labelledby="labeldiv" onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
-                          <Pencil1Icon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]" />
-                        </button>
-                        <Link href={{ pathname: '/Admin/Pastas', query:{id:user.id}}} className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
-                          <FileTextIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]" />
-                        </Link>
-                      </div>
-                    </th>
-                  </tr>)}     
-                })}
-                </tbody>
-              </table>
-            : 
-                <div className='w-full h-full flex justify-center items-center flex-col'>
-                  <Image src={users.length <= 0 ? iconNullClient : iconSearchUser} width={80} height={80} onClick={() => setWindowsAction({...windowsAction, createUser: true})}  alt="Foto de uma mulher, clique para cadastrar um cliente" className='cursor-pointer w-[170px] h-[170px]'/>
-                  <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {users.length <= 0 ? "Cadastre seu primeiro cliente!" : "Nenhum resultado foi encontrado."}</p>
-                </div>
-            }
-
-            {/* <--------------------------------- NavBar table ---------------------------------> */}
-            {usersFilter.length > 0 ?
-            <div className='w-full px-[10px] flex justify-between h-[50px] mt-[10px]'>
-              <div className='flex justify-between w-full h-[40px] max-sm:h-[30px]'>
-                <button onClick={() => {showItens.max / 10 != 1 ? setShowItens({...showItens, min: showItens.min - 10, max: showItens.max - 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == 1 ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Anterior</button>
-                <p>{`Página ${showItens.max / 10} de ${pages}`}</p>
-                <button onClick={() => {showItens.max / 10 != pages ? setShowItens({...showItens, min: showItens.min + 10, max: showItens.max + 10}) : ""}} className={` border-[2px] ${showItens.max / 10 == pages ? "bg-hilight border-terciary text-terciary" : "bg-black border-black text-white"} p-[4px] max-sm:p-[2px] rounded-[8px] text-[18px] max-md:text-[16px] max-lsm:text-[14px]`}>Proximo</button>
-              </div>
-            </div>
-            :<></>}
+            <TableClients usersFilter={usersFilter} setUsersFilter={setUsersFilter} users={users} pages={pages} searchUser={searchUser} setUserEdit={setUserEdit} setWindowsAction={setWindowsAction} windowsAction={windowsAction} SelectUsers={SelectUsers}/>
           </div>
         </div>
         {windowsAction.createUser ? <CreateUser childToParentCreate={childToParentCreate} closedWindow={closedWindow} /> : <></>}
         {windowsAction.updateUser ? <EditUser user={userEdit} childToParentEdit={childToParentEdit} closedWindow={closedWindow}/> : <></>}
-        <Modals message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} type={modal.type} size={modal.size} user={modal.user} to={"Delete"} childModal={childModal}/>
+        {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} user={modal.user} childModal={childModal}/> : <></>}
+
       </section>
   )
   }

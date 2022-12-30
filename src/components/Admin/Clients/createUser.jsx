@@ -1,9 +1,7 @@
 'use client'
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import React, {useState, useContext, useEffect} from 'react'
-import Modals from '../../Modals'
-import AppContext from '../../AppContext';
+import React, {useState, useEffect} from 'react'
 import ErrorFirebase from '../../ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
@@ -17,10 +15,8 @@ import { toast } from 'react-toastify';
 
 function CreateUser({childToParentCreate, closedWindow}){
   const imageMimeType = /image\/(png|jpg|jpeg)/i;
-  const context = useContext(AppContext)
   const [dataUser, setDataUser] = useState({id:"", name: "", email:"", cnpj: "", phone:"", password:"", company:""})
   const [file, setFile] = useState({name: "padrao.png"})
-  const [modal, setModal] = useState({message: "", type:"", size:""})
   const [fileDataURL, setFileDataURL] = useState(null);
   const [eye , setEye] = useState(true)
   const domain = new URL(window.location.href).origin
@@ -32,8 +28,7 @@ function CreateUser({childToParentCreate, closedWindow}){
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {user = doc.data() });
     if(user != undefined){
-      context.setModalGlobal(true)
-      setModal({message: "Este CNPJ já está cadastrado.", type:"error", size:"little"})
+      toast.error("Este CNPJ já está cadastrado.")
     } else {
       toast.promise(SignUp(),{pending:"Criando usuário..."})
     }
@@ -52,10 +47,8 @@ function CreateUser({childToParentCreate, closedWindow}){
         }); 
       })
       .catch((error) => {
-        console.log(error)
-        context.setModalGlobal(true)
-        setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
-    });
+        ErrorFirebase(error)
+      });
     } else {
       getDownloadURL(ref(storage, 'images/padrao.png'))
       .then((url) => {
@@ -105,9 +98,7 @@ function CreateUser({childToParentCreate, closedWindow}){
       });
     } catch (e) {
       console.log(e)
-      setModal({...modal, message: "Não foi possivel criar o usuário.", type: "error", size:"little"})
-    } finally {
-      context.setModalGlobal(true)
+      toast.error("Não foi possivel criar o usuário.")
     }
   }
 
@@ -122,8 +113,7 @@ function CreateUser({childToParentCreate, closedWindow}){
         const id = result.data.uid
         UploadPhoto(id)
       } else {
-        context.setModalGlobal(true)
-        setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
+        ErrorFirebase(result.data)
         throw "error"
       }
     } catch (e){
@@ -142,9 +132,7 @@ function CreateUser({childToParentCreate, closedWindow}){
   const changeHandler = (e) => {
     const file = e.target.files[0];
     if (!file.type.match(imageMimeType)) {
-      context.setModalGlobal(true)
-      setModal({...modal, message:"Não é permitido armazenar este tipo de arquivo, escolha uma imagem.", type:"error", size:"little"});
-      return;
+      return toast.error("Não é permitido armazenar este tipo de arquivo, escolha uma imagem.")
     }
     setFile(file);
   }
@@ -170,12 +158,6 @@ function CreateUser({childToParentCreate, closedWindow}){
       }
     }
   }, [file]);
- 
-  useEffect(() => {
-    if(context.modalGlobal === false){
-      setModal({message: "", type:"", size:""})
-    }
-  }, [context.modalGlobal]);
 
   useEffect(() => {
     setDataUser({...dataUser, password: dataUser.name.substr(0, 5) + Math.floor(Math.random() * 100000)})
@@ -251,7 +233,6 @@ return (
           </button>
         </form>
       </div>
-      <Modals message={modal.message} type={modal.type} size={modal.size}/>
     </>
   )
   }

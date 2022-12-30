@@ -4,7 +4,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import {db} from '../../../../firebase'
 import { toast } from 'react-toastify';
 
-function createFolder(props) {
+function CreateFolder(props) {
     const folders = props.user.folders
     const [color, setColor] = useState()
     const [nameFolder, setNameFolder] = useState()
@@ -62,4 +62,4 @@ function createFolder(props) {
   )
 }
 
-export default createFolder
+export default CreateFolder
