@@ -62,4 +62,4 @@ function CreateFolder(props) {
   )
 }
 
-export default createFolder
+export default CreateFolder
