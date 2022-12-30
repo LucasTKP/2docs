@@ -31,7 +31,7 @@ function Modal(props) {
             <div className='bg-primary w-[500px] max-lsm:w-[320px] rounded-[4px] flex flex-col'>
               <div  className='bg-red w-full h-[15px] rounded-t-[4px]'/>
               <div className=' px-[10px]'>
-              <p className='text-[26px] mt-[10px]'>{props.message}<span className='font-[600] font-poppins'> {props.user}</span>?</p>
+              <p className='text-[26px] mt-[10px]'>{props.message}<span className='font-[600] font-poppins overflow-hidden whitespace-nowrap text-ellipsis w-[150px]'> {props.user}</span></p>
 
               {subMessage1 != undefined ? 
                 <div className='flex items-start mt-[20px]'>

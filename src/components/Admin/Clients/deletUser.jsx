@@ -1,11 +1,11 @@
-import React, {useState, useContext, useEffect} from 'react'
 import { ref, deleteObject} from "firebase/storage";
-import {db, auth, storage } from '../../../firebase'
+import {db, auth, storage } from '../../../../firebase'
 import { doc, deleteDoc } from "firebase/firestore";
 import axios from 'axios'
+import { toast } from 'react-toastify';
 
 async function deletUser({childToParentDelet, selectUsers, usersFilter}) {
-    DeleteAuth()
+    toast.promise(DeleteAuth(),{pending:"Deletando usuários."})
       async function DeleteAuth(){
         const domain = new URL(window.location.href).origin
         const result = await axios.post(`${domain}/api/users/deleteUser`, {users: selectUsers, uid: auth.currentUser.uid})
@@ -31,11 +31,7 @@ async function deletUser({childToParentDelet, selectUsers, usersFilter}) {
       }
     
       async function DeleteFile(){
-        const users = []
-        for(let i = 0; i < usersFilter.length; i++){
-            users.push(usersFilter[i])
-          }
-
+        const users = [...usersFilter]
         for(let i = 0; i < selectUsers.length; i++){
           const result = await deleteDoc(doc(db, "users", selectUsers[i].id));
           const index = users.findIndex(user => user.id === selectUsers[i].id)

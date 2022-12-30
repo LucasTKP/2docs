@@ -8,6 +8,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from '../../firebase'
 import Loading from '../components/Loading'
 import { useRouter } from 'next/navigation';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css'
 
 const poiretOne = Poiret_One({
   display: 'swap',
@@ -37,8 +39,13 @@ useEffect(() => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       if(page === "/"){
-        router.push("/Admin")
-        const uid = user.uid;
+        auth.currentUser.getIdTokenResult().then((idTokenResult) => {
+          if(idTokenResult.claims.admin){
+            router.push("/Admin")
+          } else {
+            router.push("/Clientes")
+          }
+        })
       }
     } else {
       if(page != "/"){
@@ -46,7 +53,7 @@ useEffect(() => {
       }
     }
   });
-},[auth, router])
+},[auth, router, children])
 
 
   return (
@@ -62,6 +69,7 @@ useEffect(() => {
           <Loading />
           {children}
       </AppContext.Provider>
+      <ToastContainer />
       </body>
     </html>
   )

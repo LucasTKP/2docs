@@ -14,6 +14,8 @@ function ErrorFirebase(props) {
         message = "Já existe um usuário cadastrado com este email." 
       } else if( errors.code === "auth/user-disabled"){
         message = "Este usuário foi desabilidado"
+      } else if( errors.code === "auth/invalid-email"){
+        message = "O formato de email digitado não é aceito pelo nosso sistema."
       }
     return message
 }

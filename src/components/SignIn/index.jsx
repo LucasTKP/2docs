@@ -43,6 +43,7 @@ function Signin(){
       });
     }
   }
+  
   function SignIn(email){
     signInWithEmailAndPassword(auth, email, dataUser.password)
       .then((userCredential) => {
@@ -131,6 +132,7 @@ function Signin(){
                   <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
                 </div>
               </fieldset>
+              <button type="button" onClick={() => AlterPassword(dataUser.email)} className='w-full flex justify-end underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
               </button>
@@ -154,6 +156,7 @@ function Signin(){
                   <EyeClosedIcon onClick={() => setEye(true)}  width={20} height={20} className="w-[40px] cursor-pointer"/>}
                 </div>
               </fieldset>
+              <button type="button" onClick={() => AlterPasswordCnpj()} className='w-full flex justify-end underline text-[18px] max-lsm:text-[14px]  text-[#005694] cursor-pointer'>Esqueci a senha</button>
               <button type="submit" className='hover:scale-105 text-[#fff] cursor-pointer text-[22px] flex justify-center items-center w-full h-[55px] bg-gradient-to-r from-[#000] to-strong rounded-[8px] mt-[20px]'>
                 Entrar
               </button>

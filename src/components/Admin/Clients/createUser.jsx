@@ -2,16 +2,17 @@
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
 import React, {useState, useContext, useEffect} from 'react'
-import Modals from '../Modals'
-import AppContext from '../AppContext';
-import ErrorFirebase from '../ErrorFirebase';
-import { auth, storage, db } from '../../../firebase'
+import Modals from '../../Modals'
+import AppContext from '../../AppContext';
+import ErrorFirebase from '../../ErrorFirebase';
+import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";  
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { collection, where, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import InputMask from 'react-input-mask';
+import { toast } from 'react-toastify';
 
 
 function CreateUser({childToParentCreate, closedWindow}){
@@ -26,17 +27,15 @@ function CreateUser({childToParentCreate, closedWindow}){
 
   async function VerifyCnpj(e){
     e.preventDefault()
-    context.setLoading(true)
     var user = undefined
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {user = doc.data() });
     if(user != undefined){
       context.setModalGlobal(true)
-      context.setLoading(false)
       setModal({message: "Este CNPJ já está cadastrado.", type:"error", size:"little"})
     } else {
-      SignUp()
+      toast.promise(SignUp(),{pending:"Criando usuário..."})
     }
   }
 
@@ -49,13 +48,11 @@ function CreateUser({childToParentCreate, closedWindow}){
         getDownloadURL(ref(storage, 'images/' + referencesFile))
         .then((url) => { SignUpDb({url: url, referencesFile: referencesFile, id: id}) })
         .catch((error) => {
-          context.setLoading(false)
           console.log(error)
         }); 
       })
       .catch((error) => {
         console.log(error)
-        context.setLoading(false)
         context.setModalGlobal(true)
         setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
     });
@@ -73,6 +70,23 @@ function CreateUser({childToParentCreate, closedWindow}){
   async function SignUpDb(image){
     var name = (dataUser.name[0].toUpperCase() + dataUser.name.substring(1))
     var date = new Date() + ""
+    const data = {
+      id: image.id,
+      name: name,
+      email: dataUser.email,
+      cnpj: dataUser.cnpj,
+      password: dataUser.password,
+      phone: dataUser.phone,
+      company: dataUser.company,
+      image: image.url,
+      nameImage: image.referencesFile,
+      date: date,
+      status: false,
+      admin: false,
+      folders: []
+    }
+    childToParentCreate(data)
+
     try {
       const docRef = await setDoc(doc(db, "users", image.id), {
         id: image.id,
@@ -86,24 +100,9 @@ function CreateUser({childToParentCreate, closedWindow}){
         nameImage: image.referencesFile,
         date: date,
         status: false,
-        admin: false
+        admin: false,
+        folders: []
       });
-
-      const data = {
-        id: image.id,
-        name: name,
-        email: dataUser.email,
-        cnpj: dataUser.cnpj,
-        password: dataUser.password,
-        phone: dataUser.phone,
-        company: dataUser.company,
-        image: image.url,
-        nameImage: image.referencesFile,
-        date: date,
-        status: false,
-        admin: false
-      }
-      childToParentCreate(data)
     } catch (e) {
       console.log(e)
       setModal({...modal, message: "Não foi possivel criar o usuário.", type: "error", size:"little"})
@@ -113,20 +112,24 @@ function CreateUser({childToParentCreate, closedWindow}){
   }
 
   async function SignUp() {
-    context.setLoading(true)
     const data ={
       email: dataUser.email,
       password: dataUser.password
     }
-    const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser.uid})
-    if(result.data.uid){
-      const id = result.data.uid
-      UploadPhoto(id)
-    } else {
-      context.setModalGlobal(true)
-      context.setLoading(false)
-      setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
+    try{
+      const result = await axios.post(`${domain}/api/users/createUser`, {data: data, uid: auth.currentUser.uid})
+      if(result.data.uid){
+        const id = result.data.uid
+        UploadPhoto(id)
+      } else {
+        context.setModalGlobal(true)
+        setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
+        throw "error"
+      }
+    } catch (e){
+      console.log(e)
     }
+
   }
 
   const phoneMask = (value) => {

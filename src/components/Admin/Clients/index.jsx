@@ -1,20 +1,23 @@
 'use client'
 import { MagnifyingGlassIcon} from '@radix-ui/react-icons';
 import Image from 'next/image'
-import iconNullClient from '../../../public/icons/nullClient.svg'
-import iconSearchUser from '../../../public/icons/searchUser.svg'
+import iconNullClient from '../../../../public/icons/nullClient.svg'
+import iconSearchUser from '../../../../public/icons/searchUser.svg'
 import React, {useState, useContext, useEffect} from 'react'
-import AppContext from '../AppContext';
-import {db, auth} from '../../../firebase'
+import AppContext from '../../AppContext';
+import {db, auth} from '../../../../firebase'
 import { collection, where, getDocs, doc, updateDoc, query } from "firebase/firestore";  
 import { Pencil1Icon, FileTextIcon } from '@radix-ui/react-icons';
-import ArrowFilter from '../../../public/icons/arrowFilter.svg'
+import ArrowFilter from '../../../../public/icons/arrowFilter.svg'
 import EditUser from './editUser'
 import CreateUser from './createUser'
 import DeletUser from './deletUser'
-import Modals from '../Modals'
+import Modals from '../../Modals'
 import axios from 'axios';
-import ErrorFirebase from '../ErrorFirebase';
+import ErrorFirebase from '../../ErrorFirebase';
+import { toast } from 'react-toastify';
+import Link from 'next/link'
+
 
 
 function ComponentClients(){
@@ -31,7 +34,6 @@ function ComponentClients(){
   const [pages, setPages] = useState(0)
   const [menu, setMenu] = useState(true)
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-
   // <--------------------------------- GetUser --------------------------------->
   useEffect(() =>{
       context.setLoading(true)
@@ -57,7 +59,7 @@ function ComponentClients(){
   // <--------------------------------- Filters Table --------------------------------->
 
   function filterName(){
-    var usersHere = searchUser.length == 0 ? [...users ]: [...usersFilter]
+    var usersHere = searchUser.length == 0 ? [...users ] : [...usersFilter]
     usersHere.sort(function (x, y){
       let a = x.name.toUpperCase()
       let b = y.name.toUpperCase()
@@ -141,7 +143,6 @@ function ComponentClients(){
 
   const childModal = (childdata) => {
     if(childdata === "Delete"){
-      context.setLoading(true)
       context.setActionCancel(false)
       DeletUser({childToParentDelet, selectUsers, usersFilter})
     }
@@ -153,6 +154,7 @@ function ComponentClients(){
       setModal({...modal, message: ErrorFirebase(childdata.data), type: "error", size:"little"})
     } else {
       ResetConfig(childdata)
+      toast.success("Usuário deletado.")
     }
   }
   // <--------------------------------- Disable User --------------------------------->
@@ -161,7 +163,6 @@ function ComponentClients(){
     const users = [...usersFilter]
     const domain = new URL(window.location.href).origin
     if(selectUsers.length > 0){
-      context.setLoading(true)
       const result = await axios.post(`${domain}/api/users/disableUser`, {users: selectUsers, uid: auth.currentUser.uid})
       if(result.data.type === 'success'){
         for (let i = 0; i < selectUsers.length; i++){
@@ -175,7 +176,6 @@ function ComponentClients(){
         ResetConfig(users)
       } else {
         context.setModalGlobal(true)
-        context.setLoading(false)
         setModal({...modal, message: ErrorFirebase(result.data), type: "error", size:"little"})
       }
     } else {
@@ -199,6 +199,7 @@ function ComponentClients(){
     const users = [...usersFilter]
     users.push(childdata)
     ResetConfig(users)
+    toast.success("Usuário criado com sucesso.")
   }
 
   const closedWindow = () => {
@@ -213,6 +214,7 @@ function ComponentClients(){
     users.splice(index, 1)
     users.push(childdata)
     ResetConfig(users)
+    toast.success("Usuário editado com sucesso")
   }
   useEffect(() => {
     if(context.modalGlobal === false){
@@ -220,14 +222,13 @@ function ComponentClients(){
     }
   }, [context.modalGlobal]);
   
-function ResetConfig(){
+function ResetConfig(users){
+  setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
+  setUsersFilter(users)
   setPages(Math.ceil(users.length / 10))
   setMenu(true)
-  setUsersFilter(users)
   setSelectUsers([])
   setUsers(users)
-  setWindowsAction({...windowsAction, createUser: false, updateUser: false, deletUser: false})
-  context.setLoading(false)
 }
 
 return (
@@ -237,17 +238,17 @@ return (
           <div className=' w-full relative border-[2px] border-terciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
               <div className='flex items-center bg-transparent'>
-                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{usersFilter.length} <span className='text-black'>Clientes</span></p>
+                <p className='mr-[20px] max-sm:mr-[5px] text-[20px] font-[500] max-md:text-[18px] max-sm:text-[16px] max-lsm:text-[14px]'>{users.length} <span className='text-black'>Clientes</span></p>
                 <MagnifyingGlassIcon width={25} height={25} className="max-sm:h-[18px] max-sm:w-[18px]"/>
                 <input type="text" value={searchUser} onChange={(Text) => setSearchUser(Text.target.value)}  className='w-[300px] text-black max-lg:w-[250px] max-md:w-[200px] max-sm:w-[120px] max-lsm:w-[100px] bg-transparent text-[20px] outline-none max-sm:text-[14px] max-lsm:text-[12px]' placeholder='Buscar' ></input>
               </div>
               <div className={`flex gap-[10px] max-lg:flex-col max-lg:absolute max-lg:right-[0] ${menu ? "" : "max-lg:bg-[#959595]"} max-lg:top-[0] max-lg:px-[5px] max-lg:pb-[5px]`}>
-                <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`flex-col self-center none max-lg:flex ${menu ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
-                    <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
-                    <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
-                    <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
+                <button id="MenuTable" aria-label="Botão menu da tabela" onClick={() => setMenu(!menu)} className={`flex-col self-center hidden max-lg:flex ${menu ? "mt-[10px]" : "mt-[20px]"}  mb-[10px]`}>
+                  <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-45"}`}/>
+                  <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
+                  <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => DisableUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
+                <button onClick={() => toast.promise(DisableUser(),{pending:"Trocando status do usuário.", success:"Status trocado com sucesso."})} className={` border-[2px] ${selectUsers.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Trocar Status</button>
                 <button onClick={() => ConfirmationDeleteUser()} className={` border-[2px] ${selectUsers.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 <button onClick={() => setWindowsAction({...windowsAction, createUser:true})} className={`bg-black text-white p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>+ Cadastrar</button>
               </div>
@@ -288,7 +289,7 @@ return (
                   </tr>
                 </thead>
 
-                    {/* <--------------------------------- BodyTable ---------------------------------> */}
+                {/* <--------------------------------- BodyTable ---------------------------------> */}
                 <tbody>
                 {usersFilter.map((user, index) =>{
                   var checked = user.checked
@@ -297,7 +298,7 @@ return (
                 return(
                 <tr key={user.id} className='border-b-[1px] border-terciary text-[18px] max-lg:text-[16px]' >
                     <th className='h-[50px] max-sm:h-[40px]'>
-                        <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px] ml-[5px]'/>
+                      <input aria-label="Selecionar Usuário" type="checkbox" checked={checked} onChange={(e) => checked = e.target.value}  onClick={() => SelectUsers(index)} className='w-[20px] h-[20px]  max-sm:w-[15px] max-sm:h-[15px] ml-[5px]'/>
                     </th>
 
                     <th className='font-[400] flex ml-[20px] max-lg:ml-[10px] items-center h-[50px] max-sm:h-[40px]'>
@@ -325,12 +326,12 @@ return (
 
                     <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                       <div className='flex justify-between'>
-                        <button id="alb" title="Botão De editar usuario" aria-labelledby="labeldiv" onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer bg-terciary p-[4px] flex justify-center items-center rounded-[8px]'>
-                          <Pencil1Icon width={25} height={25}/>
+                        <button id="alb" title="Botão De editar usuario" aria-labelledby="labeldiv" onClick={() => (setUserEdit(user), setWindowsAction({...windowsAction, updateUser:true}))} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
+                          <Pencil1Icon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]" />
                         </button>
-                        <button id="alb" title="Botão De ver documentos" aria-labelledby="labeldiv" className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
-                          <FileTextIcon width={25} height={25}/>
-                        </button>
+                        <Link href={{ pathname: '/Admin/Pastas', query:{id:user.id}}} className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
+                          <FileTextIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]" />
+                        </Link>
                       </div>
                     </th>
                   </tr>)}     
