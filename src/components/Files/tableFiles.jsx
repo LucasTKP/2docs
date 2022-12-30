@@ -7,7 +7,7 @@ import { DownloadIcon, EyeOpenIcon} from '@radix-ui/react-icons';
 import DownloadsFile from './dowloadFiles'
 
 
-export default function tableFiles(props) {
+export default function TableFiles(props) {
   const [filter, setFilter] = useState({name: false, size:false, date:false, status:false})
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
   const [showItens, setShowItens] = useState({min:-1, max:10})
