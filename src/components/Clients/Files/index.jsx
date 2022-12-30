@@ -7,7 +7,6 @@ import {db, auth} from '../../../../firebase'
 import { collection, where, query, getDocs} from "firebase/firestore";  
 import { FileIcon  } from '@radix-ui/react-icons';
 import UploadFile from '../../Files/uploadFile'
-import Modals from '../../Modals'
 import { useSearchParams } from 'next/navigation';
 import ViewFile from '../../Files/viewFile';
 import { toast } from 'react-toastify';
@@ -22,13 +21,11 @@ function ComponentUpload(){
   const [filesFilter, setFilesFilter] = useState([])
   const [searchFile, setSearchFile] = useState("")
   const [selectFiles, setSelectFiles] = useState([])
-  const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: "",  type:"", size:"", files:"" })
   const [pages, setPages] = useState(0)
   const [menu, setMenu] = useState(true)
   const [documents, setDocuments] = useState({view: false, url: ""})
   const params = useSearchParams()
   const folderName = params.get("folder")
-  const id = params.get("id")
 
   // <--------------------------------- GetFiles --------------------------------->
   useEffect(() =>{
@@ -77,8 +74,7 @@ function ComponentUpload(){
     for(let i = 0; i < e.target.files.length; i++){
       if(e.target.files[i].size > 2000000){
         e.target.value = null
-        context.setModalGlobal(true)
-        return setModal({...modal, message:"Os arquivos só podem ter no maximo 2mb.", type:"error", size:"little"})
+        return toast.error("Os arquivos só podem ter no maximo 2mb.")
       }
     }
     const data = {
@@ -104,19 +100,13 @@ function ComponentUpload(){
     setFiles(files)
   }
 
-  useEffect(() => {
-    if(context.modalGlobal === false){
-      setModal({...modal, message: "", type:"", size:""})
-    }
-  }, [context.modalGlobal]);
-
 return (
       <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
         <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           <p  className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Documentos</p>
           <div className='flex items-top'>
             <Image src={folder} alt="Imagem de uma pasta" width={21} height={21}/> 
-              <Link href={{pathname:"Clientes/Pastas"}}  className='text-[18px] flex mx-[5px] text-secondary'>{"Pastas    >"}</Link> 
+              <Link href={"Clientes/Pastas"}  className='text-[18px] flex mx-[5px] text-secondary'>{"Pastas    >"}</Link> 
             <FileIcon height={21} width={21}/>
             <p  className='text-[18px] flex mx-[5px] text-secondary'>{"Fiscal"}</p> 
           </div>
@@ -145,7 +135,6 @@ return (
           </div>
         </div>
         {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}
-        <Modals message={modal.message} type={modal.type} size={modal.size} files={modal.files}/>
       </div>
   )
   }

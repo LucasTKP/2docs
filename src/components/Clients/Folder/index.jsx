@@ -73,8 +73,6 @@ import DownloadsFile from '../../Files/dowloadFiles';
       setRecentsFile(recents)
     }
 
-
-
     return(
       <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>

@@ -25,7 +25,7 @@ import {toast} from 'react-toastify'
     const [user, setUser] = useState()
     const [folders, setFolders] = useState([])
     const [foldersFilter, setFoldersFilter] = useState([])
-    const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: "",  type:"", size:""})
+    const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: ""})
     const [searchFolders, setSearchFolders] = useState("")
     const [deletFolder, setDeletFolder] = useState()
 
@@ -91,23 +91,14 @@ import {toast} from 'react-toastify'
 
     function ConfirmationDeleteFolder(name){
       setDeletFolder(name)
-      context.setModalGlobal(true)
       setModal({...modal, status:true, message: "Tem certeza que deseja excluir está Pasta?", subMessage1: "Todos os arquivos irão para a lixeira.", type:"error", size:"big"})
     }
 
-    const childModal = (childdata) => {
-      if(childdata === "Delete"){
-        toast.info("Deletando pasta e arquivos, aguarde.")
-        context.setActionCancel(false)
-        DeleteFolderAndFiles()
-      }
+    const childModal = () => {
+      toast.info("Deletando pasta e arquivos, aguarde.")
+      setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
+      DeleteFolderAndFiles()
     }
-
-    useEffect(() => {
-      if(context.modalGlobal === false){
-        setModal({...modal, message: "", type:"", size:""})
-      }
-    }, [context.modalGlobal]);
 
     async function DeleteFolderAndFiles(){
       const name = deletFolder
@@ -121,10 +112,10 @@ import {toast} from 'react-toastify'
         const index = filesHere.findIndex(file => file.id_file === filesToTrash[i].id_file)
         filesHere[index].trash = true
       }
+      toast.success("Pasta e arquivos deletados.")
       setFiles(filesHere)
     }
 
-console.log(files)
     return(
       <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
@@ -195,7 +186,7 @@ console.log(files)
             </Link>
           </div>
           {createFolder ? <CreateFolder  folder={setCreateFolder} idUser={id} user={user} setFolders={setFolders}  setFoldersFilter={setFoldersFilter}/> : <></>}
-          <Modals message={modal.message} subMessage1={modal.subMessage1} type={modal.type} size={modal.size} files={modal.files} to={"Delete"} childModal={childModal}/>
+          {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} files={modal.files} childModal={childModal}/> : <></>}
       </div>
     )
   }

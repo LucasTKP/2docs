@@ -1,6 +1,7 @@
+import {toast} from 'react-toastify'
+
 function ErrorFirebase(props) {
     const errors = props
-    console.log(errors.code)
     var message = errors.message
       if(errors.code === "auth/too-many-requests"){
         message = "Limite de tentativas de login excedido, tente novamente mais tarde."
@@ -17,7 +18,7 @@ function ErrorFirebase(props) {
       } else if( errors.code === "auth/invalid-email"){
         message = "O formato de email digitado não é aceito pelo nosso sistema."
       }
-    return message
+      toast.error(message)
 }
 
 export default ErrorFirebase

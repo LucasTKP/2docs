@@ -7,8 +7,8 @@ async function DownloadsFile(props){
   const page = window.location.pathname
   const filesDownloaded = props.filesDownloaded
   const files = props.files
-  toast.info("Baixando os arquivos...")
   if(filesDownloaded.length === 0) return toast.error("Selecione um arquivo para baixar.")
+  toast.info("Baixando os arquivos...")
   for(var i = 0; i < filesDownloaded.length; i++){
     let blob = await fetch(filesDownloaded[i].url).then(r => r.blob());
     filesDownloaded[i].urlDownload = (window.URL ? URL : webkitURL).createObjectURL(blob)

@@ -28,9 +28,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-
-const [modalGlobal, setModalGlobal] = useState(false)
-const [actionCancel, setActionCancel] = useState(false)
+  
 const [loading, setLoading] = useState(false)
 const router =  useRouter()
 
@@ -62,8 +60,6 @@ useEffect(() => {
       <head />
       <body className={`${poiretOne.variable} ${poppins.variable} text-white font-poppins`}>
       <AppContext.Provider value={{
-        modalGlobal, setModalGlobal, 
-        actionCancel, setActionCancel, 
         loading, setLoading
         }}>
           <Loading />

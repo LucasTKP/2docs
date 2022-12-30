@@ -1,9 +1,7 @@
 import * as Tabs from '@radix-ui/react-tabs';
 import styles from "./signIn.module.css"
-import * as Checkbox from '@radix-ui/react-checkbox';
 import { CheckIcon, EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { useState, useContext} from 'react';
-import Modals from '../Modals'
 import AppContext from '../AppContext';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth, db} from '../../../firebase'
@@ -13,12 +11,12 @@ import { useRouter } from 'next/navigation';
 import InputMask from 'react-input-mask';
 import Image from 'next/image';
 import Logo from '../../../public/image/2core.png'
+import { toast } from 'react-toastify';
 
 function Signin(){
   const context = useContext(AppContext)
   const [dataUser, setDataUser] = useState({email: "", password: "", cnpj:"", checked: false})
   const [eye, setEye] = useState(false)
-  const [modal, setModal] = useState({message: "", type: "error"})
   const router = useRouter()
 
   function SignInEmail(e){
@@ -35,8 +33,7 @@ function Signin(){
     console.log(data.docs[0])
     if(data.docs[0] === undefined){
       context.setLoading(false)
-      context.setModalGlobal(true)
-      setModal({message: "Este usuário não foi cadastrado.", type:"error", size:"little"})
+      toast.error("Este usuário não foi cadastrado.")
     } else {
       data.forEach((doc) => {
         SignIn(doc.data().email)
@@ -52,53 +49,41 @@ function Signin(){
       })
       .catch((error) => {
         context.setLoading(false)
-        context.setModalGlobal(true)
-        setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
+        ErrorFirebase(error)
       });
   }
 
   function AlterPassword(email){
     if(dataUser.email === ""){
-      return (
-        context.setModalGlobal(true),
-        setModal({message: "Preencha o campo de email.", type:"error", size:"little"})
-      )
+      return toast.error("Preencha o campo de email.")
     }
-
     sendPasswordResetEmail(auth, email)
     .then((data) => {
-      context.setModalGlobal(true)
-      setModal({...modal, message:`Enviamos um link para o email: ${email}, Verifique a caixa de SPAN.`, type: 'sucess'});
       context.setLoading(false)
+      toast.success(`Enviamos um link para o email: ${email}, Verifique a caixa de SPAN.`)
     })
-  .catch((error) => {
-    context.setModalGlobal(true)
-    setModal({...modal, message: ErrorFirebase(error), type: "error", size:"little"})
-    context.setLoading(false)
-  });
+    .catch((error) => {
+      context.setLoading(false)
+      ErrorFirebase(error)
+    });
   }
 
   async function AlterPasswordCnpj(){
     if(dataUser.cnpj === ""){
-      return (
-        context.setModalGlobal(true),
-        setModal({message: "Preencha o campo de cnpj.", type:"error", size:"little"})
-      )
+      return toast.error("Preencha o campo de cnpj.")
     }
     context.setLoading(true)
     const q = query(collection(db, "users"), where("cnpj", "==", dataUser.cnpj))
     const data = await getDocs(q);
     if(data.docs[0] === undefined){
       context.setLoading(false)
-      context.setModalGlobal(true)
-      setModal({message: "Este usuário não foi cadastrado.", type:"error", size:"little"})
+      toast.error("Este usuário não foi cadastrado.")
     } else {
       data.forEach((doc) => {
         AlterPassword(doc.data().email)
       });
     }
   }
-
     return (
       <section className="bg-primary w-screen min-h-screen h-full flex flex-col justify-center items-center text-black">
         <Image src={Logo} alt="Logo da empresa" height={150} width={150} className='rounded-full'/>
@@ -163,7 +148,6 @@ function Signin(){
             </form>
           </Tabs.Content>
         </Tabs.Root>
-        <Modals message={modal.message} type={modal.type} size="little"/>
       </section>
   )
   }

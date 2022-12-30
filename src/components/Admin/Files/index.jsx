@@ -25,7 +25,7 @@ function ComponentUpload(){
   const [filesFilter, setFilesFilter] = useState([])
   const [searchFile, setSearchFile] = useState("")
   const [selectFiles, setSelectFiles] = useState([])
-  const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: "",  type:"", size:"" })
+  const [modal, setModal] = useState({status: false, message: "", subMessage1: "", subMessage2: ""})
   const [pages, setPages] = useState(0)
   const [menu, setMenu] = useState(true)
   const [documents, setDocuments] = useState({view: false, url: ""})
@@ -96,8 +96,7 @@ function ComponentUpload(){
     for(let i = 0; i < e.target.files.length; i++){
       if(e.target.files[i].size > 2000000){
         e.target.value = null
-        context.setModalGlobal(true)
-        return setModal({...modal, message:"Os arquivos só podem ter no maximo 2mb.", type:"error", size:"little"})
+        return toast.error("Os arquivos só podem ter no maximo 2mb.")
       }
     }
     const data = {
@@ -119,20 +118,18 @@ function ComponentUpload(){
 
   function ConfirmationDeleteFile(){
     if(selectFiles.length > 0){
-      context.setModalGlobal(true)
       if(trash){
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir este arquivo?", subMessage1: "Será permanente.", subMessage2:"Não será possivel recuperar.", type:"error", size:"big"})
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir este arquivo?", subMessage1: "Será permanente.", subMessage2:"Não será possivel recuperar."})
       } else {
-        context.setModalGlobal(true)
-        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivos?", subMessage1: "Estes arquivos vão para a lixeira.", subMessage2:undefined, type:"error", size:"big"})
+        setModal({...modal, status:true, message: "Tem certeza que deseja excluir estes arquivos?", subMessage1: "Estes arquivos vão para a lixeira.", subMessage2:undefined})
       }
     } else {
-      setModal({...modal, message: "Selecione um arquivo para deletar.", type: "error", size:"little"})    }
+      toast.error("Selecione um arquivo para deletar.")    
+    }
   }
 
-  const childModal = (childdata) => {
-    if(childdata === "Delete"){
-      context.setActionCancel(false)
+  const childModal = () => {
+    setModal({status: false, message: "", subMessage1: "", subMessage2: ""})
       if(trash){
         toast.info("Deletando usuários, aguarde.")
         DeletFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig})
@@ -140,17 +137,14 @@ function ComponentUpload(){
         toast.info("Deletando usuários, aguarde.")
         DisableFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig})
       }
-    }
   }
 
   // <--------------------------------- Enable File --------------------------------->
   function ConfirmationEnableFile(){
-    context.setModalGlobal(true)
     if(selectFiles.length > 0){
       EnableFiles({files:files, selectFiles:selectFiles, ResetConfig:ResetConfig, folders: user.folders})
     } else {
-      context.setModalGlobal(true)
-      setModal({...modal, message: "Selecione um arquivo para deletar.", type: "error", size:"little"})
+      toast.error("Selecione um arquivo para deletar.")
     }
   }
 
@@ -161,12 +155,6 @@ function ComponentUpload(){
     setSelectFiles([])
     setFiles(files)
   }
-
-  useEffect(() => {
-    if(context.modalGlobal === false){
-      setModal({...modal, message: "", type:"", size:""})
-    }
-  }, [context.modalGlobal]);
 
 return (
       <div className="bg-primary w-full h-full min-h-screen pb-[20px] flex flex-col items-center text-black">
@@ -191,7 +179,7 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black my-[8px] max-lsm:my-[5px] ${menu ? "" : "hidden"}`}/>
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
-                <button onClick={() => toast.promise(DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig}), {pending: "Baixando arquivo."})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
+                <button onClick={() => DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
                 <button onClick={() => ConfirmationDeleteFile()} className={` border-[2px] ${selectFiles.length > 0 ? "bg-red/40 border-red text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Deletar</button>
                 {trash ? 
                   <button onClick={() => ConfirmationEnableFile()} className={`bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
@@ -210,7 +198,7 @@ return (
           </div>
         </div>
         {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}
-        <Modals message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2} type={modal.type} size={modal.size} to={"Delete"} childModal={childModal}/>
+        {modal.status ? <Modals setModal={setModal} message={modal.message} subMessage1={modal.subMessage1} subMessage2={modal.subMessage2}  childModal={childModal}/> : <></>}
       </div>
   )
   }
