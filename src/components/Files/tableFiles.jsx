@@ -3,14 +3,14 @@ import iconAddFile from '../../../public/icons/addFile.svg'
 import ArrowFilter from '../../../public/icons/arrowFilter.svg'
 import iconSearchFile from '../../../public/icons/searchFile.svg' 
 import Image from 'next/image'
-import { DownloadIcon, EyeOpenIcon} from '@radix-ui/react-icons';
+import { DownloadIcon, EyeOpenIcon, TrashIcon} from '@radix-ui/react-icons';
 import DownloadsFile from './dowloadFiles'
-
 
 export default function TableFiles(props) {
   const [filter, setFilter] = useState({name: false, size:false, date:false, status:false})
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Augusto", "Setembro", "Outubro", "Novembro", "Dezembro"]
   const [showItens, setShowItens] = useState({min:-1, max:10})
+  const url = window.location.href
   const trash = props.trash
 
   function filterName(){
@@ -147,22 +147,28 @@ export default function TableFiles(props) {
                         <th className='font-[400] max-lg:hidden text-left'>{formatDate(file.date)}</th>
 
                         <th className='font-[400] w-[80px] pr-[10px] max-sm:pr-[0px] max-sm:w-[70px] text-[18px] max-sm:text-[14px] '>
-                            {file.viwed  ? 
-                                <div className='bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-full px-[4px]'>
-                                    Visualizado
-                                </div>
-                            :
-                                <div className='bg-hilight max-sm:text-[12px] border-terciary text-secondary border-[1px]  px-[4px] rounded-full'>
-                                    Visualizado
-                                </div>
-                            }
+                          {file.viwed  ? 
+                              <div className='bg-greenV/20 border-greenV text-[#00920f] border-[1px] rounded-full px-[4px]'>
+                                  Visualizado
+                              </div>
+                          :
+                              <div className='bg-hilight max-sm:text-[12px] border-terciary text-secondary border-[1px]  px-[4px] rounded-full'>
+                                  Visualizado
+                              </div>
+                          }
                         </th>
 
                         <th className='font-[400]  w-[90px] max-lg:w-[80px] px-[5px]'>
                             <div className='flex justify-between'>
-                                <button id="DowloadFile" aria-label="Botão de fazer dowload do documento." onClick={() => DownloadsFile({filesDownloaded:[file], files:props.files, ResetConfig:props.ResetConfig})} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
-                                    <DownloadIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
+                              {url.includes("/Clientes") && file.from === "user" ? 
+                                <button onClick={() => props.ConfirmationDeleteFile(index)} id="DeletFile" aria-label="Botão de deletar o documento."  className='cursor-pointer bg-red/30 p-[4px] flex justify-center items-center rounded-[8px]'>
+                                  <TrashIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
                                 </button>
+                              :
+                                <button id="DowloadFile" aria-label="Botão de fazer dowload do documento." onClick={() => DownloadsFile({filesDownloaded:[file], files:props.files, ResetConfig:props.ResetConfig})} className='cursor-pointer bg-hilight p-[4px] flex justify-center items-center rounded-[8px]'>
+                                  <DownloadIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
+                                </button>  
+                              }
 
                                 <button onClick={() => props.setDocuments({...props.documents, view: true, url: file.url}) }title="Botão De ver documentos" aria-labelledby="labeldiv" className='bg-[#bfcedb] p-[4px] flex justify-center items-center rounded-[8px]'>
                                     <EyeOpenIcon width={25} height={25} className="max-sm:w-[20px] max-sm:h-[18px]"/>
