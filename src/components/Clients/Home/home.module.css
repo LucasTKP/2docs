@@ -1,0 +1,9 @@
+#boxFiles::-webkit-scrollbar {
+    width: 8px;
+    scroll-margin:10px;
+  }
+  
+#boxFiles::-webkit-scrollbar-thumb {
+    border-radius: 100px;
+    background: #D2D2D2;
+}

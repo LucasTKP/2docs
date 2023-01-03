@@ -168,18 +168,17 @@ function CreateUser({childToParentCreate, closedWindow}){
 
 return (
     <>
-      <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen pb-[100px] absolute right-0 flex flex-col items-center max-sm:z-10'>
-        <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full '>
-          <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px]  max-sm:h-[35px] absolute left-[5px]'/>
+      <div className='w-[600px] max-sm:w-screen bg-[#DDDDDD] min-h-screen pb-[100px] absolute right-0 flex flex-col items-center'>
+        <div className='bg-[#D2D2D2] flex justify-center items-center h-[142px] max-md:h-[127px] max-sm:h-[80px] border-b-[2px] border-terciary w-full max-sm:z-50'>
+          <DoubleArrowRightIcon onClick={() => closedWindow()} className='text-black cursor-pointer h-[40px] w-[40px] max-sm:w-[35px] max-sm:h-[35px] absolute left-[5px]'/>
           <p className='font-poiretOne text-[40px] max-sm:text-[35px] flex'>Cadastrar</p>
         </div>
         <form  onSubmit={VerifyCnpj} className='w-full px-[10%] flex flex-col gap-y-[20px] max-sm:gap-y-[5px] text-[20px] max-sm:text-[18px]'>
         {fileDataURL ? 
-        <div className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[30px] max-sm:mt-[15px] relative'>
-          <Image src={fileDataURL} width={180} height={180} alt="preview" className='w-full h-full rounded-full'/> 
-          <div onClick={()=> (setFileDataURL(false), setFile({name:"padrao.png"}))} className='absolute right-[-10px] top-[5px] w-[30px] h-[4px] bg-strong rotate-45 after:w-[30px] after:h-[4px] after:bg-strong after:block after:rotate-90 '></div>
-        </div>
-
+          <div className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] mt-[30px] max-sm:mt-[15px] relative'>
+            <Image src={fileDataURL} width={180} height={180} alt="preview" className='w-full h-full rounded-full'/> 
+            <div onClick={()=> (setFileDataURL(false), setFile({name:"padrao.png"}))} className='absolute right-[-10px] top-[5px] w-[30px] h-[4px] bg-strong rotate-45 after:w-[30px] after:h-[4px] after:bg-strong after:block after:rotate-90 '></div>
+          </div>
         : 
           <label  className='cursor-pointer self-center w-[180px] h-[180px] max-sm:w-[120px] max-sm:h-[120px] bg-gradient-to-b from-[#D2D2D2] to-[#9E9E9E] rounded-full mt-[30px] max-sm:mt-[15px]'>
             <input  type="file" className='hidden' accept='.png, .jpg, .jpeg' onChange={changeHandler} />

@@ -57,17 +57,15 @@ import DownloadsFile from '../../Files/dowloadFiles';
     }
 
     async function FilterDate(getFiles){
-      const filesHere = [...getFiles]
+      const filesHere = [...getFiles].filter(file => file.trash === false && file.from === "admin")
       const recents = []
       filesHere.sort(function(a,b) { 
         a.date = new Date(a.date)
         b.date = new Date(b.date)
         return (a.date.getTime() - b.date.getTime()) + ""
       });
-      for (var i = 0; i < 3; i++) {
-        if(filesHere[i] && filesHere[i].trash === false){
+      for (var i = 0; 3 > i && i < (filesHere.length); i++) {
           recents.push(filesHere[i])
-        }
       }
       context.setLoading(false)
       setRecentsFile(recents)

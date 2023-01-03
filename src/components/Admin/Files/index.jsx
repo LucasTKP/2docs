@@ -53,7 +53,7 @@ function ComponentUpload(){
     const getFiles = []
     var q 
     if(trash){
-      q = query(collection(db, "files"), where("trash", "==", Boolean(trash)))
+      q = query(collection(db, "files"), where("trash", "==", Boolean(trash)), where("id_user", "==", id))
     } else {
       q = query(collection(db, "files"), where("trash", "==", false) , where("folder", "==", folderName), where("id_user", "==", id));
     }
