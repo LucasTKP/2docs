@@ -1,8 +1,7 @@
 'use client'
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import Image from 'next/image'
-import React, {useState, useContext, useEffect} from 'react'
-import AppContext from '../../AppContext';
+import React, {useState, useEffect} from 'react'
 import ErrorFirebase from '../../ErrorFirebase';
 import { auth, storage, db } from '../../../../firebase'
 import { ref,  uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
@@ -130,14 +129,17 @@ function EditUser(props){
   }
   
   const phoneMask = (value) => {
-  return value
-    .replaceAll("(", "")
-    .replaceAll("(", "")
-    .replaceAll("-", "")
-    .replaceAll("-", "")
-    .replace(/\D+/g, '') // não deixa ser digitado nenhuma letra
-    .replace(/^(\d{2})(\d)/g,"($1) $2")
-    .replace(/(\d)(\d{4})$/,"$1-$2")// captura 2 grupos de número o primeiro com 2 digitos e o segundo de com 3 digitos, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de número
+    if(value != undefined){
+      return value
+      .replaceAll("(", "")
+      .replaceAll("(", "")
+      .replaceAll("-", "")
+      .replaceAll("-", "")
+      .replace(/\D+/g, '') // não deixa ser digitado nenhuma letra
+      .replace(/^(\d{2})(\d)/g,"($1) $2")
+      .replace(/(\d)(\d{4})$/,"$1-$2")// captura 2 grupos de número o primeiro com 2 digitos e o segundo de com 3 digitos, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de número
+    }
+    return ""
   }
 
   const changeHandler = (e) => {
