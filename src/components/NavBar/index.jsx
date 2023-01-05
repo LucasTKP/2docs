@@ -73,7 +73,7 @@ function NavBar(props) {
                 <div className='w-[90%] h-[3px] bg-terciary mt-[20px] max-sm:mt-[10px]'/>
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Admin" || path === "/Clientes" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[60px] flex justify-center items-center`}>
-                        <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="IconButton" onClick={()=>  router.push(props.user === "Clients" ? "/Clientes" :"/Admin")}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black'/> </button>
+                        <button id="alb" title="Pagina Inicial" aria-labelledby="labeldiv" className="IconButton" onClick={()=>  (setMenu(!menu) ,router.push(props.user === "Clients" ? "/Clientes" :"/Admin"))}> <HomeIcon className='w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black'/> </button>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                         <Tooltip.Content  side="right" sideOffset={10}>
@@ -85,7 +85,7 @@ function NavBar(props) {
                 {props.user === "Clients" ? 
                     <Tooltip.Root>
                         <Tooltip.Trigger asChild className={`mt-[20px] ${path === "/Clientes/Arquivos" || path === "/Clientes/Pastas" ? "bg-secondary/30" : ""} w-full h-[100px] max-sm:max-h-[60px] flex justify-center items-center`}>
-                            <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> router.push("/Clientes/Pastas")}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black'/> </button>
+                            <button className="IconButton" id="alb" title="Pagina De Arquivos" aria-labelledby="labeldiv" onClick={()=> (setMenu(!menu), router.push("/Clientes/Pastas"))}> <FileTextIcon className='w-[50px] h-[50px] max-sm:w-[35px] max-sm:h-[35px] text-black'/> </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                             <Tooltip.Content  side="right" sideOffset={10}>

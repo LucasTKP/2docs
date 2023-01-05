@@ -3,6 +3,7 @@ import { collection, where, getDocs, query } from "firebase/firestore";
 import Image from 'next/image';
 import { useEffect, useState } from 'react'
 import styles from './home.module.css'
+import DownloadFiles from '../../Files/dowloadFiles'
 
 
 function ComponentHome () {
@@ -70,7 +71,7 @@ function ComponentHome () {
                   {recentsFile.length > 0 ?
                     recentsFile.map((file) =>{
                       return(
-                        <div key={file.id_file} className="flex items-center gap-[10px] mt-[10px] h-[50px]">
+                        <div onClick={() => DownloadFiles({filesDownloaded:[file]})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
                           <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                           <p className='overflow-hidden whitespace-nowrap text-ellipsis'>{file.name}</p>
                         </div>
@@ -91,7 +92,7 @@ function ComponentHome () {
                       return(
                         <a key={contact} href={linkWhatsApp } className="flex items-center gap-[10px] mt-[10px] h-[50px]">
                           <Image src={`/icons/whatsapp.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
-                          <p type="text" className='text-[20px] text-ellipsis pl-[5px]'>{contact}</p>
+                          <p type="text" className='text-[20px] text-ellipsis pl-[5px] white-space'>{contact}</p>
                         </a> 
                       )
                     })
@@ -101,23 +102,21 @@ function ComponentHome () {
             </div>
           </div>
 
-            <div>
-              <p  className='font-poiretOne text-[40px] max-sm:text-[35px] mt-[20px]'>Dúvidas Frequentes</p>
-              <div className=' w-[90%] pr-[5px] rounded-[12px]'>
-                {data.question.length > 0 ? 
-                data.question.map((question) => {
-                  return(
-                    <div key={question.question}>
-                      <details className="h-full flex items-center gap-[10px]">
-                        <summary className='text-[18px]'>{question.question}</summary>
-                        <p type="text" className='text-[18px] text-ellipsis pl-[5px] pb-[15px]'>{question.response}</p>
-                      </details> 
-                    </div>
-                  )
-                })
-              : <></>}
-              </div>
-            </div>
+          <p  className='font-poiretOne text-[40px] max-sm:text-[35px] mt-[20px]'>Dúvidas Frequentes</p>
+          <div className=' w-full'>
+            {data.question.length > 0 ? 
+            data.question.map((question) => {
+              return(
+                <div key={question.question} className="w-full">
+                  <details>
+                    <summary className='text-[18px] font-[600] whitespace-pre-line'>{question.question}</summary>
+                    <p type="text" className='text-[18px] pl-[5px] pb-[15px] whitespace-pre-wrap w-full'>{question.response}</p>
+                  </details> 
+                </div>
+              )
+            })
+          : <></>}
+          </div>
         </div>
       </div>
   )

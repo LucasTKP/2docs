@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import styles from './home.module.css'
 import { toast } from 'react-toastify';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
-
+import DownloadFiles from '../../Files/dowloadFiles'
 
 function ComponentHome () {
   const [urlImage, setUrlImage] = useState()
@@ -157,7 +157,7 @@ function ComponentHome () {
                 {recentsFile.length > 0 ?
                 recentsFile.map((file) =>{
                     return(
-                      <div key={file.id_file} className="flex items-center gap-[10px] mt-[10px] h-[50px]">
+                      <div onClick={() => DownloadFiles({filesDownloaded:[file]})} key={file.id_file} className="cursor-pointer flex items-center gap-[10px] mt-[10px] h-[50px]">
                         <Image src={`/icons/${file.type}.svg`} alt="Imagem simbolizando o tipo de arquivo" width={80} height={80} className="w-[40px] h-[40px]"/>
                         <p className='overflow-hidden whitespace-nowrap text-ellipsis'>{file.name}</p>
                       </div>
@@ -195,30 +195,36 @@ function ComponentHome () {
           </div>
         </div>
 
-        <p  className='font-poiretOne mt-[20px] text-[40px] max-sm:text-[35px] '>Dúvidas Frequentes</p>
-        <div className='border-[2px] border-secondary w-[400px] max-lsm:w-[330px] h-[200px] p-[10px] rounded-[12px]'>
+        <p  className='font-poiretOne mt-[20px] text-[40px] max-lg:hidden'>Dúvidas Frequentes</p>
+        <div className='max-lg:hidden border-[2px] border-secondary w-[850px] h-[400px] p-[10px] rounded-[12px]'>
           <div id={styles.boxFiles} className='overflow-y-scroll h-full px-[5px] flex flex-col'>
             <div className="flex items-center gap-[5px] mt-[10px]">
               <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
-              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[90%]'>
-                <input type="text" value={data.question.length > 0  ? data.question[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
-                <input type="text" value={data.question.length > 0 ? data.question[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
+                <p>Pergunta:</p>
+                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question.length > 0  ? data.question[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <p>Resposta:</p>
+                <textarea  id={styles.boxFiles} wrap rows={3} type="text" value={data.question.length > 0 ? data.question[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
 
-            <div className="flex items-center gap-[5px] mt-[10px]">
+            <div className="flex items-center gap-[5px] mt-[30px]">
               <QuestionMarkCircledIcon className="w-[40px] h-[40px] "/>
-              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[90%]'>
-                <input type="text" value={data.question[1] ? data.question[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
-                <input type="text" value={data.question[1] ? data.question[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
+                <p>Pergunta:</p>
+                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question[1] ? data.question[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <p>Resposta:</p>
+                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question[1] ? data.question[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
 
-            <div className="flex items-center gap-[5px] mt-[10px]">
+            <div className="flex items-center gap-[5px] mt-[30px]">
               <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
-              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[90%]'>
-                <input type="text" value={data.question[2] ? data.question[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
-                <input type="text" value={data.question[2] ? data.question[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] overflow-hidden whitespace-nowrap text-ellipsis pl-[5px]'/>
+              <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
+                <p>Pergunta:</p>
+                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question[2] ? data.question[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <p>Resposta:</p>
+                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question[2] ? data.question[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
             <button onClick={() => UpdateBdQuestion()} className="flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center" >
