@@ -76,7 +76,7 @@ import DownloadsFile from '../../Files/dowloadFiles';
           <div className='w-[85%] h-full ml-[100px] max-lg:ml-[0px] max-lg:w-[90%] mt-[50px]'>
           {recentsFile.length > 0 ? 
           <>
-            <p  onClick={() => Teste()} className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Uploads recentes</p>
+            <p className=' font-poiretOne text-[40px] max-sm:text-[35px]'>Uploads recentes</p>
             <div className='flex items-top'>
               <Image src={IconFolder} alt="Imagem de uma pasta"/> 
               <p  className='text-[18px] flex mx-[5px] text-secondary'>Pastas</p> 
