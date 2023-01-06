@@ -44,7 +44,6 @@ function CreateFolder(props) {
                 <input onChange={(text) => setNameFolder(text.target.value)} maxLength={30} className='w-[80%] bg-transparent border-black border-[2px] rounded-[8px] text-[20px] max-sm:text-[18px]  max-lsm:text-[16px] px-[5px] py-[3px] outline-none' placeholder='Digite o nome da pasta' />
                 <p className='text-[20px] mt-[15px] font-[500]'>Cor da pasta:</p>
                 <div className='gap-[10px] flex'>
-                    <div className={`w-[30px] h-[30px] bg-[#005694] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#005694" ? "border-[#0093FF] border-[3px]" : <></>}`} onClick={() => (setColor("#005694"))}/>
                     <div className={`w-[30px] h-[30px] bg-[#C7A03C] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#C7A03C" ? "border-[#0093FF] border-[3px]" : <></>}`} onClick={() => (setColor("#C7A03C"))}/>
                     <div className={`w-[30px] h-[30px] bg-[#248B2E] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#248B2E" ? "border-[#0093FF] border-[3px]" : <></>}`} onClick={() => (setColor("#248B2E"))}/>
                     <div className={`w-[30px] h-[30px] bg-[#BE0000] rounded-[4px] hover:scale-105 cursor-pointer ${color === "#BE0000" ? "border-[#0093FF] border-[3px]" : <></>}`} onClick={() => (setColor("#BE0000"))}/>

@@ -202,9 +202,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question.length > 0  ? data.question[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} type="text" value={data.question.length > 0  ? data.question[0].question : ""} onChange={(text)  => ChangeQuestion({index:0, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea  id={styles.boxFiles} wrap rows={3} type="text" value={data.question.length > 0 ? data.question[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea  id={styles.boxFiles} rows={3} type="text" value={data.question.length > 0 ? data.question[0].response : ""} onChange={(text)  => ChangeResponse({index:0, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
 
@@ -212,9 +212,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px] "/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question[1] ? data.question[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} type="text" value={data.question[1] ? data.question[1].question : ""} onChange={(text)  => ChangeQuestion({index:1, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question[1] ? data.question[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} type="text" value={data.question[1] ? data.question[1].response : ""} onChange={(text)  => ChangeResponse({index:1, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
 
@@ -222,9 +222,9 @@ function ComponentHome () {
               <QuestionMarkCircledIcon className="w-[40px] h-[40px]"/>
               <div className='border-black border-[2px] rounded-[8px] p-[5px] w-[94%]'>
                 <p>Pergunta:</p>
-                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question[2] ? data.question[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} type="text" value={data.question[2] ? data.question[2].question : ""} onChange={(text)  => ChangeQuestion({index:2, text:text.target.value})} className='w-full border-b-black border-b-[2px] outline-none bg-transparent text-[18px] pl-[5px]'/>
                 <p>Resposta:</p>
-                <textarea id={styles.boxFiles} wrap rows={3} type="text" value={data.question[2] ? data.question[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
+                <textarea id={styles.boxFiles} rows={3} type="text" value={data.question[2] ? data.question[2].response : ""} onChange={(text)  => ChangeResponse({index:2, text:text.target.value})} className='w-full outline-none bg-transparent text-[18px] pl-[5px]'/>
               </div>
             </div>
             <button onClick={() => UpdateBdQuestion()} className="flex rounded-[8px] text-[20px] items-center mt-[10px] h-[50px] px-[5px] bg-greenV/20 border-[2px] border-greenV text-greenV self-center" >

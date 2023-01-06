@@ -105,17 +105,17 @@ function ComponentHome () {
           <p  className='font-poiretOne text-[40px] max-sm:text-[35px] mt-[20px]'>Dúvidas Frequentes</p>
           <div className=' w-full'>
             {data.question.length > 0 ? 
-            data.question.map((question) => {
-              return(
-                <div key={question.question} className="w-full">
-                  <details>
-                    <summary className='text-[18px] font-[600] whitespace-pre-line'>{question.question}</summary>
-                    <p type="text" className='text-[18px] pl-[5px] pb-[15px] whitespace-pre-wrap w-full'>{question.response}</p>
-                  </details> 
-                </div>
-              )
-            })
-          : <></>}
+              data.question.map((question) => {
+                return(
+                  <div key={question.question} className="w-full">
+                    <details>
+                      <summary className='text-[18px] font-[600] whitespace-pre-line'>{question.question}</summary>
+                      <p type="text" className='text-[18px] pl-[5px] pb-[15px] whitespace-pre-wrap w-full'>{question.response}</p>
+                    </details> 
+                  </div>
+                )
+              })
+            : <></>}
           </div>
         </div>
       </div>
