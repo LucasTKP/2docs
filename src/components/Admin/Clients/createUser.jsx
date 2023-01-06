@@ -76,7 +76,7 @@ function CreateUser({childToParentCreate, closedWindow}){
       date: date,
       status: false,
       admin: false,
-      folders: []
+      folders: [{color:"#005694", name: "Cliente"}]
     }
     childToParentCreate(data)
 
@@ -94,7 +94,7 @@ function CreateUser({childToParentCreate, closedWindow}){
         date: date,
         status: false,
         admin: false,
-        folders: []
+        folders: [{color:"#005694", name: "Cliente"}]
       });
     } catch (e) {
       console.log(e)
@@ -164,7 +164,6 @@ function CreateUser({childToParentCreate, closedWindow}){
     
     setDataUser({...dataUser, password: password})
   },[dataUser.name])
-
 
 return (
     <>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import iconAddFile from '../../../public/icons/addFile.svg'
 import ArrowFilter from '../../../public/icons/arrowFilter.svg'
 import iconSearchFile from '../../../public/icons/searchFile.svg' 
@@ -12,6 +12,15 @@ export default function TableFiles(props) {
   const [showItens, setShowItens] = useState({min:-1, max:10})
   const url = window.location.href
   const trash = props.trash
+  const [messageEmpty, setMessageEmpty] = useState()
+  useEffect(() => {
+    console.log(props.folderName)
+    if(url.includes("Clientes") === true  && props.folderName === "Cliente" ){
+      setMessageEmpty("Envie seu primeiro arquivo!")
+    } else if(url.includes("Admin") === true  && props.folderName != "Cliente") {
+      setMessageEmpty("Envie seu primeiro arquivo!")
+    }
+  },[])
 
   function filterName(){
     var files = props.searchFile.length == 0 ? [...props.files ]: [...props.filesFilter]
@@ -180,16 +189,15 @@ export default function TableFiles(props) {
             </tbody>
         </table>
       : 
-        trash ? 
-          <div className='w-full h-full flex justify-center items-center flex-col'>
+        <div className='w-full h-full flex justify-center items-center flex-col'>
             <Image src={props.files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="clique para enviar um arquivo" className='w-[170px] h-[170px]'/>
+          {trash ? 
             <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {props.filesFilter.length <= 0 ? "Nenhum arquivo deletado encontrado." : "Nenhum resultado foi encontrado."} </p>
-          </div>
-        :
-          <div className='w-full h-full flex justify-center items-center flex-col'>
-            <Image src={props.files.length <= 0 ? iconAddFile : iconSearchFile} width={80} height={80}  alt="clique para enviar um arquivo" className='w-[170px] h-[170px]'/>
-            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {props.filesFilter.length <= 0 ? "Envie seu primeiro arquivo!" : "Nenhum resultado foi encontrado."}</p>
-          </div>
+          :
+            <p className='font-poiretOne text-[40px] max-sm:text-[30px] text-center'>Nada por aqui... <br/> {props.filesFilter.length <= 0 ? messageEmpty : "Nenhum resultado foi encontrado."}</p>
+          }
+        </div>
+
       }
 
     {/* <--------------------------------- NavBar table ---------------------------------> */}

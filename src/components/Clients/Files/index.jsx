@@ -39,7 +39,7 @@ function ComponentUpload(){
 
   async function GetFiles(){
     const getFiles = []
-      const q = query(collection(db, "files"), where("trash", "==", false), where("folder", "==", folderName,));
+      const q = query(collection(db, "files"), where("trash", "==", false), where("folder", "==", folderName), where("id_user", "==", auth.currentUser.uid));
       const querySnapshot = await getDocs(q);
       const a = querySnapshot.forEach((doc) => {
         getFiles.push(doc.data())
@@ -128,7 +128,7 @@ return (
             <Image src={folder} alt="Imagem de uma pasta" width={21} height={21}/> 
               <Link href={"Clientes/Pastas"}  className='text-[18px] flex mx-[5px] text-secondary'>{"Pastas    >"}</Link> 
             <FileIcon height={21} width={21}/>
-            <p  className='text-[18px] flex mx-[5px] text-secondary'>{"Fiscal"}</p> 
+            <p  className='text-[18px] flex mx-[5px] text-secondary'>{folderName}</p> 
           </div>
           <div className=' w-full relative border-[2px] border-terciary mt-[30px] max-md:mt-[15px] rounded-[8px]'>
             <div className='mt-[10px] flex justify-between mx-[20px] max-sm:mx-[5px]'>
@@ -144,14 +144,14 @@ return (
                   <div className={`w-[35px] max-lsm:w-[30px]  h-[3px] bg-black transition duration-500 max-sm:duration-400  ease-in-out ${menu ? "" : "rotate-[135deg] mt-[-3px]"}`}/>
                 </button>
                 <button onClick={() => DownloadsFile({filesDownloaded:selectFiles, files:files, ResetConfig:ResetConfig})} className={` border-[2px] ${selectFiles.length > 0 ? "bg-blue/40 border-blue text-white" : "bg-hilight border-terciary text-strong"} p-[5px] rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>Download</button>
-                  <label className={`bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
+                  <label className={`${folderName != "Cliente" ? "hidden" : <></>} bg-black cursor-pointer text-white p-[5px] flex justify-center items-center rounded-[8px] text-[17px] max-sm:text-[14px] ${menu ? "max-lg:hidden" : ""}`}>
                     Upload
                     <input onChange={changeHandler} multiple="multiple" type="file" name="document" id="document" className='hidden w-full h-full' />
                   </label>
               </div>
             </div>
             {/*<-------------- Table of Files --------------> */}
-            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} document={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile}/>
+            <TableFiles filesFilter={filesFilter} setFilesFilter={setFilesFilter} files={files} pages={pages} setDocuments={setDocuments} document={documents} ResetConfig={ResetConfig} SelectFile={SelectFile} searchFile={searchFile} ConfirmationDeleteFile={ConfirmationDeleteFile} folderName={folderName}/>
           </div>
         </div>
         {documents.view ?  <ViewFile setDocuments={setDocuments} document={documents}/> : <></>}
